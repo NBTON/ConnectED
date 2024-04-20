@@ -1,2 +1,3 @@
 # SWE-363---Front-End
-the frond-end implementation of our project ConectEd.
+""the front-end implementation of our project ConectEd.""
+in this implementation, we have provided HTML, CSS, and JS files that align with our UI designs.
