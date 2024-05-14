@@ -1,0 +1,152 @@
+body {
+    padding: 10px 50px;
+    margin: 0;
+    font-family: sans-serif;
+    color: darkslategray;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+ header > a {
+color: #E45200;
+font-weight: 600;
+font-size: .8rem;
+text-decoration: none;
+ }
+
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-block: 1rem;
+}
+
+img {
+    height: 70px;
+}
+
+#search-input-wrapper {
+    display: flex;
+}
+#search-input {
+    max-width: 600px;
+    min-width: 300px;
+    width: 60%;
+
+
+}
+#search-input-wrapper i {
+    width: 40px;
+    background-color:  #E45200;
+    color: white;
+    font-size: 15px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+* {
+    box-sizing: border-box;
+}
+.subject-list-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding-block: 2rem;
+
+}
+
+.no-subject-text {
+    grid-column: 2;
+    margin-top: 20px;
+}
+
+ @media screen and (max-width:420px) {
+        .subject-list-container { 
+    grid-template-columns: repeat(2, 1fr);
+        }
+
+        header img {
+            width: 130px !important;
+            height: auto !important;
+        }
+    }
+
+.subject-card {
+    border: 1px solid black;
+    border-radius: 20px;
+    font-size: .7rem;
+    min-width: 163px;
+    max-width: 280px;
+}
+.subject-card img {
+    width: 100%;
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+    height: 100px;
+    object-fit: cover;
+}
+
+.subject-text-content {
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.subject-text-content .text-truncate {
+    white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+
+}
+
+.subject-card .text-bold {
+    font-size: .8rem;
+}
+.subject-card .subject-info-row{
+    display: flex;
+    justify-content: space-between;
+    padding-inline: 15px;
+    padding-block: 10px;
+}
+
+.subject-info-row i {
+    color: #E45200;;
+}
+
+
+.pagination {
+  display: inline-block;
+}
+
+.pagination a {
+  color: black;
+  float: left;
+  padding: 8px 14px;
+  text-decoration: none;
+  transition: background-color .3s;
+  border: 1px solid #ddd;
+  margin: 0 4px;
+  color: #E45200;;
+  border-radius: 5px;
+
+ 
+}
+
+.pagination a:first-child , .pagination a:last-child {
+border: none;}
+
+.pagination a > span {
+    color: #E45200;;
+}
+
+.pagination a.active {
+  background-color:  #E45200;
+  color: white;
+  border: 1px solid  #E45200;
+}
+
+.pagination a:hover:not(.active) {background-color: #ddd;}

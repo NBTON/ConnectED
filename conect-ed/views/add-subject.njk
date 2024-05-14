@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <title>Gallery</title>
+        <link rel="stylesheet" href="/css/add-subject-style.css"/>
+    </head>
+    <body>
+        <h1>
+            <a href="/subjects"><img src="/Assets/ConnectEdLogo.png"/>
+            </a>
+        </h1>
+        <main>
+            <form action="/subjects/add" method="POST" id="add-subject-form" enctype="multipart/form-data">
+                <h3>
+                    Add Subject
+                </h3>
+                <div class="input-wrapper">
+                    <label for="title">
+                        Title
+                    </label>
+                    <input type="text" id="title" name="title" required/>
+                </div>
+                <div class="input-wrapper">
+                    <label for="linktoTheCall">
+                        Link To The Call
+                    </label>
+                    <textarea id="linktoTheCall" name="linktoTheCall" rows="4" required></textarea>
+                    <span class="max-characer-hint-text">
+                        50 Characters allowed
+                    </span>
+                </div>
+                <div class="input-wrapper">
+                    <label for="file" id="file-label">
+                        <div>
+                            Upload an image
+                        </div>
+                        <div>
+                            Select an image
+                        </div>
+                    </label>
+                    <div class="file-input">
+                        <input type="file" id="file-input-field" name="image" required class="file-input-field">
+                        <label for="file-input-field" class="file-input-label">
+                            <span>
+                                Drag file here or
+                            </span>
+                            <span class="choose-from">
+                                Choose from folder
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <button id="save-button" type="submit">
+                    Add
+                </button>
+            </form>
+        </main>
+    </body>
+</html>

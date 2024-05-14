@@ -1,0 +1,38 @@
+{% extends "layout.njk" %}
+{% block content %}
+    <form action="/register" method="POST">
+        <h2>Welcome!</h2>
+        <p class="sign_in_up">Sign up to</p>
+        ConnectEd <br>
+        <p class="Orange">Email</p>
+        <input type="email" class="Login_Register_TextFeild" name="email" placeholder="Enter your email" required/>
+        <p class="Orange">User Name</p>
+        <input type="text" class="Login_Register_TextFeild" name="username" placeholder="Enter your user name" required/>
+        <p class="Orange">Password</p>
+        <input
+            id="password"
+            type="password"
+            class="Login_Register_TextFeild"
+            name="password"
+            placeholder="Enter your password"
+            required
+            minlength="6"/>
+        <p class="Orange">Confirm Password</p>
+        <input
+            id="confirm-password"
+            type="password"
+            class="Login_Register_TextFeild"
+            placeholder="Confirm your password"
+            name="confirmPassword"
+            required
+            minlength="6"/>
+        <br>
+        <p>
+            <input type="checkbox" id="password_toggle" name="password_toggle">
+            <label for="password_toggle">Show Password</label>
+        </p>
+        <input type="submit" value="Register" class="Login_Register_Button">
+        <br> Already have an account?
+        <a href="/login" class="Orange">Sign in</a>
+    </form>
+{% endblock %}
