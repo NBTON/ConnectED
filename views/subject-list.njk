@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <title>Gallery</title>
+        <link rel="stylesheet" href="css/listing-subject-style.css"/>
+        <script src="Script/subject-listing.js" defer></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+    <body>
+        <header>
+            <a href="/login">
+                Logout
+            </a>
+            <a href="/subjects"><img src="Assets/ConnectEdLogo.png"/>
+            </a>
+            <a href="/subjects/add">
+                Add subject
+                <i class="fa fa-plus" aria-hidden="true"></i>
+            </a>
+        </header>
+        <main>
+            <form id="search-form" action="/subjects" method="GET">
+                <div id="search-input-wrapper">
+                    <input type="search" id="search-input" value="{{ text }}" name="search" placeholder="Search subjects..."/>
+                    <i class="fa fa-search" id="search-icon" aria-hidden="true"></i>
+                </div>
+            </form>
+            <script>
+                const searchIcon = document.getElementById('search-icon');
+                const searchForm = document.getElementById('search-form');
+                searchIcon.addEventListener('click', () => { // Submit the form when a key is released in the search input field
+                    searchForm.submit();
+                });
+            </script>
+            {% if subjects | length > 0 %}
+                <div class="subject-list-container" id="subject-list-container">
+                    {% for subject in subjects %}
+                        <div class="subject-card">
+                            <img src="/images/{{ subject.image }}">
+                            <div class="subject-text-content">
+                                <div class="text-truncate text-bold" title="{{ subject.title }}">{{ subject.title }}</div>
+                                <a class="text-truncate" href="{{ subject.linktoTheCall }}" target="_blank" title="{{ subject.linktoTheCall }}">{{ subject.linktoTheCall }}</a>
+                            </div>
+                            {# <div class="subject-info-row"></div> #}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if totalPages > 1 %}
+                    <div class="pagination">
+                        {% if  currentPage > 1 %}
+                            <a href="/subjects?page={{ currentPage - 1 }}&search={{ text }}">&#60;
+                                <span>Previous</span>
+                            </a>
+                        {% endif %}
+                        {% for i in range(1, totalPages + 1) %}
+                            {% if i == currentPage %}
+                                <a href="/subjects?page={{ i }}&search={{ text }}" class="page-link active">{{ i }}</a>
+                            {% else %}
+                                <a href="/subjects?page={{ i }}&search={{ text }}" class="page-link">{{ i }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        {% if  currentPage < totalPages %}
+                            <a href="/subjects?page={{ currentPage + 1 }}&search={{ text }}" class="page-link">
+                                <span>Next</span>
+                                &#62;
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="no-subject-text">No Subject added</div>
+            {% endif %}
+        </main>
+    </body>
+</html></body></html>

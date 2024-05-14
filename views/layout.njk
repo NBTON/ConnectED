@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{ title }}</title>
+        <link rel="stylesheet" href="Css/style.css">
+        <script src="Script/script.js" defer></script>
+    </head>
+    <body>
+        <header>
+            <div class="bodystyle_div" id="head">
+                <a href="/"><img src="Assets/ConnectEdLogo.png" alt="Logo">
+                </a>
+            </div>
+        </header>
+        <div class="grid">
+            <div class="grid_item1"> {% block content %}{% endblock %}
+                </div>
+                <div class="grid_item2">
+                    <img src="Assets/About.PNG" alt="DiscussPic" class="DiscussPic">
+                </div>
+            </div>
+        </body>
+    </html>

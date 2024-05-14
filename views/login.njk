@@ -1,0 +1,31 @@
+{% extends "layout.njk" %}
+{% block content %}
+    <form action="/login" method="POST">
+        <h2>Welcome !</h2>
+        <p class="sign_in_up">Sign in to</p>
+        ConnectEd
+        <p class="Orange">User Name</p>
+        <input type="text" class="Login_Register_TextFeild" name="username" placeholder="Enter your user name" required/>
+        <p class="Orange">Password</p>
+        <input
+            id="password"
+            type="password"
+            class="Login_Register_TextFeild"
+            name="password"
+            placeholder="Enter your password"
+            required/>
+        <br>
+        <p>
+            <input type="checkbox" id="password_toggle" name="password_toggle"/>
+            <label for="password_toggle">Show Password</label>
+        </p>
+        <p>
+            <input type="checkbox" id="Remember_me" name="Remember_me">
+            <label for="Remember_me">Remember Me</label>
+            <a href="">Forgot Password?</a>
+        </p>
+        <input type="submit" value="Login" class="Login_Register_Button">
+        <br> Don't have an account?
+        <a href="/register" class="Orange">Register</a>
+    </form>
+{% endblock %}
