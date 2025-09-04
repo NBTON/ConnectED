@@ -1,31 +1,30 @@
 {% extends "layout.njk" %}
 {% block content %}
-    <form action="/login" method="POST">
-        <h2>Welcome !</h2>
-        <p class="sign_in_up">Sign in to</p>
-        ConnectEd
-        <p class="Orange">User Name</p>
-        <input type="text" class="Login_Register_TextFeild" name="username" placeholder="Enter your user name" required/>
-        <p class="Orange">Password</p>
-        <input
-            id="password"
-            type="password"
-            class="Login_Register_TextFeild"
-            name="password"
-            placeholder="Enter your password"
-            required/>
-        <br>
-        <p>
-            <input type="checkbox" id="password_toggle" name="password_toggle"/>
-            <label for="password_toggle">Show Password</label>
-        </p>
-        <p>
-            <input type="checkbox" id="Remember_me" name="Remember_me">
-            <label for="Remember_me">Remember Me</label>
-            <a href="">Forgot Password?</a>
-        </p>
-        <input type="submit" value="Login" class="Login_Register_Button">
-        <br> Don't have an account?
-        <a href="/register" class="Orange">Register</a>
-    </form>
+<div class="max-w-md mx-auto">
+  <h1 class="text-2xl font-semibold">Sign in</h1>
+  <form action="/login" method="POST" class="mt-6 space-y-4">
+    <div>
+      <label for="username" class="label">Username</label>
+      <input id="username" name="username" type="text" required class="input mt-1" placeholder="Enter your username" />
+      {% if flash and flash.errors and flash.errors.username %}
+        <p class="error-text">{{ flash.errors.username }}</p>
+      {% endif %}
+    </div>
+    <div>
+      <label for="password" class="label">Password</label>
+      <input id="password" name="password" type="password" required class="input mt-1" placeholder="Enter your password" />
+      {% if flash and flash.errors and flash.errors.password %}
+        <p class="error-text">{{ flash.errors.password }}</p>
+      {% endif %}
+    </div>
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2 text-sm text-gray-600">
+        <input id="remember_me" name="remember_me" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" />
+        <label for="remember_me">Remember me</label>
+      </div>
+    </div>
+    <button type="submit" class="w-full btn-primary">Sign in</button>
+    <p class="text-sm text-gray-600 text-center">Don't have an account? <a href="/register" class="text-primary hover:underline">Register</a></p>
+  </form>
+</div>
 {% endblock %}

@@ -1,0 +1,53 @@
+{% extends "layout.njk" %}
+{% block content %}
+<div class="flex items-center justify-between">
+  <h1 class="text-2xl font-semibold">Courses</h1>
+  <a href="/courses/add" class="btn-primary">Add Course</a>
+</div>
+
+<form id="search-form" action="/courses" method="GET" class="mt-6">
+  <label for="search" class="label">Search Courses</label>
+  <div class="mt-1 flex">
+    <input type="search" id="search" name="search" value="{{ text }}" placeholder="Search courses..." class="input flex-1" />
+    <button type="submit" class="ml-2 btn-secondary">Search</button>
+  </div>
+</form>
+
+{% if courses and courses | length > 0 %}
+  <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for course in courses %}
+      <article class="card">
+        <img src="/uploads/courses/{{ course.image }}" alt="Course image for {{ course.title }}" class="w-full h-44 object-cover" onerror="this.onerror=null;this.src='/Assets/subject-img.jpg';" />
+        <div class="p-4">
+          <h2 class="text-lg font-semibold truncate" title="{{ course.title }}">{{ course.title }}</h2>
+          <p class="mt-1 text-sm text-gray-600 truncate" title="{{ course.linktoTheCall }}">
+            <a href="{{ course.linktoTheCall }}" target="_blank" rel="noopener" class="text-primary hover:underline">{{ course.linktoTheCall }}</a>
+          </p>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+
+  {% if totalPages > 1 %}
+    <nav class="mt-8 flex items-center justify-center gap-2" aria-label="Pagination">
+      {% if  currentPage > 1 %}
+        <a href="/courses?page={{ currentPage - 1 }}&search={{ text }}" class="btn-secondary" aria-label="Previous page">Previous</a>
+      {% endif %}
+
+      {% for i in range(1, totalPages + 1) %}
+        {% if i == currentPage %}
+          <span class="btn-secondary bg-gray-100" aria-current="page">{{ i }}</span>
+        {% else %}
+          <a href="/courses?page={{ i }}&search={{ text }}" class="btn-secondary">{{ i }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if  currentPage < totalPages %}
+        <a href="/courses?page={{ currentPage + 1 }}&search={{ text }}" class="btn-secondary" aria-label="Next page">Next</a>
+      {% endif %}
+    </nav>
+  {% endif %}
+{% else %}
+  <p class="mt-8 text-gray-600">No Courses added.</p>
+{% endif %}
+{% endblock %}

@@ -1,38 +1,39 @@
 {% extends "layout.njk" %}
 {% block content %}
-    <form action="/register" method="POST">
-        <h2>Welcome!</h2>
-        <p class="sign_in_up">Sign up to</p>
-        ConnectEd <br>
-        <p class="Orange">Email</p>
-        <input type="email" class="Login_Register_TextFeild" name="email" placeholder="Enter your email" required/>
-        <p class="Orange">User Name</p>
-        <input type="text" class="Login_Register_TextFeild" name="username" placeholder="Enter your user name" required/>
-        <p class="Orange">Password</p>
-        <input
-            id="password"
-            type="password"
-            class="Login_Register_TextFeild"
-            name="password"
-            placeholder="Enter your password"
-            required
-            minlength="6"/>
-        <p class="Orange">Confirm Password</p>
-        <input
-            id="confirm-password"
-            type="password"
-            class="Login_Register_TextFeild"
-            placeholder="Confirm your password"
-            name="confirmPassword"
-            required
-            minlength="6"/>
-        <br>
-        <p>
-            <input type="checkbox" id="password_toggle" name="password_toggle">
-            <label for="password_toggle">Show Password</label>
-        </p>
-        <input type="submit" value="Register" class="Login_Register_Button">
-        <br> Already have an account?
-        <a href="/login" class="Orange">Sign in</a>
-    </form>
+<div class="max-w-md mx-auto">
+  <h1 class="text-2xl font-semibold">Create your account</h1>
+  <form action="/register" method="POST" class="mt-6 space-y-4">
+    <div>
+      <label for="email" class="label">Email</label>
+      <input id="email" name="email" type="email" required class="input mt-1" placeholder="Enter your email" />
+      {% if flash and flash.errors and flash.errors.email %}
+        <p class="error-text">{{ flash.errors.email }}</p>
+      {% endif %}
+    </div>
+    <div>
+      <label for="username" class="label">Username</label>
+      <input id="username" name="username" type="text" required class="input mt-1" placeholder="Choose a username" />
+      {% if flash and flash.errors and flash.errors.username %}
+        <p class="error-text">{{ flash.errors.username }}</p>
+      {% endif %}
+    </div>
+    <div>
+      <label for="password" class="label">Password</label>
+      <input id="password" name="password" type="password" minlength="6" required class="input mt-1" placeholder="Create a password" />
+      <p class="help-text">At least 6 characters.</p>
+      {% if flash and flash.errors and flash.errors.password %}
+        <p class="error-text">{{ flash.errors.password }}</p>
+      {% endif %}
+    </div>
+    <div>
+      <label for="confirmPassword" class="label">Confirm password</label>
+      <input id="confirmPassword" name="confirmPassword" type="password" minlength="6" required class="input mt-1" placeholder="Re-enter your password" />
+      {% if flash and flash.errors and flash.errors.confirmPassword %}
+        <p class="error-text">{{ flash.errors.confirmPassword }}</p>
+      {% endif %}
+    </div>
+    <button type="submit" class="w-full btn-primary">Create account</button>
+    <p class="text-sm text-gray-600 text-center">Already have an account? <a href="/login" class="text-primary hover:underline">Sign in</a></p>
+  </form>
+</div>
 {% endblock %}
