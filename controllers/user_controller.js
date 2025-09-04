@@ -72,7 +72,9 @@ const loginUser = async (req, res) => {
     req.session.username = user.username
     req.session.userEmail = user.email
     req.session.flash = { type: 'success', message: 'Signed in successfully.' }
-    res.redirect('/courses')
+    const returnTo = req.session.returnTo || '/courses'
+    req.session.returnTo = null
+    res.redirect(returnTo)
   } catch (error) {
     console.log('Login error', error)
     req.session.flash = { type: 'error', message: 'Something went wrong.' }

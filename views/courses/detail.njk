@@ -1,0 +1,58 @@
+{% extends "layout.njk" %}
+{% block content %}
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold">{{ course.title }}</h1>
+      <p class="mt-1 text-sm text-gray-600">
+        <a href="{{ course.linktoTheCall }}" target="_blank" rel="noopener" class="text-primary hover:underline">Join call</a>
+      </p>
+    </div>
+    <div>
+      <a href="/courses" class="btn-secondary">Back to Courses</a>
+    </div>
+  </div>
+
+  <div class="mt-6 border-b border-gray-200">
+    <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+      <a href="/courses/{{ course._id }}?tab=overview" class="whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium {{ tab == 'overview' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">Overview</a>
+      <a href="/courses/{{ course._id }}?tab=groups" class="whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium {{ tab == 'groups' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">Study Groups</a>
+    </nav>
+  </div>
+
+  {% if tab == 'overview' %}
+    <div class="mt-6">
+      <div class="prose prose-sm max-w-none">
+        <p>This is the course overview. Use the Study Groups tab to create or join a group.</p>
+      </div>
+    </div>
+  {% else %}
+    <div class="mt-6 flex items-center justify-between">
+      <h2 class="text-lg font-semibold">Study Groups</h2>
+      <a href="/groups/new?course={{ course._id }}" class="btn-primary">Create Study Group</a>
+    </div>
+
+    {% if groups and groups | length > 0 %}
+      <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for g in groups %}
+          <article class="card">
+            <div class="p-4">
+              <div class="flex items-center justify-between">
+                <h3 class="text-lg font-semibold truncate" title="{{ g.name }}">{{ g.name }}</h3>
+                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium {{ g.visibility == 'public' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700' }}">{{ g.visibility | capitalize }}</span>
+              </div>
+              <p class="mt-1 text-sm text-gray-600">Members: {{ g.memberCount }}</p>
+              <div class="mt-4 flex items-center justify-between">
+                <a href="/groups/{{ g._id }}" class="btn-secondary">View</a>
+                {% if g.isOwner %}
+                  <span class="text-xs text-gray-500">Owner</span>
+                {% endif %}
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="mt-4 text-gray-600">No Study Groups yet. Be the first to create one!</p>
+    {% endif %}
+  {% endif %}
+{% endblock %}

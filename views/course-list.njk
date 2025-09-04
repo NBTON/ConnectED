@@ -23,6 +23,9 @@
           <p class="mt-1 text-sm text-gray-600 truncate" title="{{ course.linktoTheCall }}">
             <a href="{{ course.linktoTheCall }}" target="_blank" rel="noopener" class="text-primary hover:underline">{{ course.linktoTheCall }}</a>
           </p>
+          <div class="mt-4">
+            <a href="/courses/{{ course._id }}" class="btn-secondary">View Course</a>
+          </div>
         </div>
       </article>
     {% endfor %}
