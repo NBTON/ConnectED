@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root { color-scheme: light; }
+}
+
+@layer components {
+  .btn-primary { @apply inline-flex items-center justify-center rounded-md bg-primary text-white font-medium px-4 py-2 shadow-sm hover:bg-orange-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2; }
+  .btn-secondary { @apply inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-900 px-4 py-2 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2; }
+  .card { @apply bg-white rounded-lg shadow-sm ring-1 ring-gray-200 overflow-hidden; }
+  .input { @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary; }
+  .label { @apply block text-sm font-medium text-gray-700; }
+  .help-text { @apply mt-1 text-sm text-gray-500; }
+  .error-text { @apply mt-1 text-sm text-red-600; }
+  .badge { @apply inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800; }
+}

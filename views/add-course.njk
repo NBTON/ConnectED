@@ -1,0 +1,28 @@
+{% extends "layout.njk" %}
+{% block content %}
+<h1 class="text-2xl font-semibold">Add Course</h1>
+<form action="/courses/add" method="POST" enctype="multipart/form-data" class="mt-6 space-y-6 max-w-xl">
+  <div>
+    <label for="title" class="label">Title</label>
+    <input type="text" id="title" name="title" required class="input mt-1" />
+    <p class="help-text">Provide a concise course title.</p>
+  </div>
+
+  <div>
+    <label for="linktoTheCall" class="label">Link to the call</label>
+    <textarea id="linktoTheCall" name="linktoTheCall" rows="3" required class="input mt-1"></textarea>
+    <p class="help-text">Paste a meeting link or resource URL.</p>
+  </div>
+
+  <div>
+    <label for="image" class="label">Course image</label>
+    <input type="file" id="image" name="image" accept="image/*" class="mt-1 block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-orange-600" />
+    <p class="help-text">Optional. If not provided, a default image will be used.</p>
+  </div>
+
+  <div class="flex gap-3">
+    <button type="submit" class="btn-primary">Create course</button>
+    <a href="/courses" class="btn-secondary">Cancel</a>
+  </div>
+</form>
+{% endblock %}

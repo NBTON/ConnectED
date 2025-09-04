@@ -1,23 +1,90 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>{{ title }}</title>
-        <link rel="stylesheet" href="Css/style.css">
-        <script src="Script/script.js" defer></script>
-    </head>
-    <body>
-        <header>
-            <div class="bodystyle_div" id="head">
-                <a href="/"><img src="Assets/ConnectEdLogo.png" alt="Logo">
-                </a>
-            </div>
-        </header>
-        <div class="grid">
-            <div class="grid_item1"> {% block content %}{% endblock %}
-                </div>
-                <div class="grid_item2">
-                    <img src="Assets/About.PNG" alt="DiscussPic" class="DiscussPic">
-                </div>
-            </div>
-        </body>
-    </html>
+<html lang="en" class="h-full bg-gray-50">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ title or 'connectED' }}</title>
+    <link rel="stylesheet" href="/styles/tailwind.css" />
+    <link rel="icon" href="/Assets/ConnectEdLogo.png" />
+  </head>
+  <body class="min-h-full text-gray-900">
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 bg-white text-gray-900 px-3 py-2 rounded-md shadow">Skip to content</a>
+
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+      <nav class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Primary">
+        <div class="flex h-16 items-center justify-between">
+          <div class="flex items-center gap-3">
+            <a href="/" class="flex items-center gap-2">
+              <img src="/Assets/ConnectEdLogo.png" alt="connectED logo" class="h-8 w-auto" />
+              <span class="text-lg font-semibold tracking-tight">connectED</span>
+            </a>
+          </div>
+          <div class="hidden md:flex items-center gap-6">
+            <a href="/about" class="text-sm font-medium text-gray-700 hover:text-primary">About</a>
+            {% if currentUser %}
+              <a href="/courses" class="text-sm font-medium text-gray-700 hover:text-primary">Courses</a>
+              <a href="/courses/add" class="text-sm font-medium text-gray-700 hover:text-primary">Add Course</a>
+              <form action="/logout" method="POST" class="inline">
+                <button class="btn-secondary">Logout</button>
+              </form>
+            {% else %}
+              <a href="/login" class="btn-secondary">Sign in</a>
+              <a href="/register" class="btn-primary">Get started</a>
+            {% endif %}
+          </div>
+          <button id="menuBtn" class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/50" aria-controls="mobileMenu" aria-expanded="false">
+            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+            <span class="sr-only">Open main menu</span>
+          </button>
+        </div>
+        <div id="mobileMenu" class="md:hidden hidden border-t border-gray-200 py-3" role="region">
+          <div class="flex flex-col gap-2">
+            <a href="/about" class="px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">About</a>
+            {% if currentUser %}
+              <a href="/courses" class="px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">Courses</a>
+              <a href="/courses/add" class="px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">Add Course</a>
+              <form action="/logout" method="POST" class="px-2 py-1">
+                <button class="w-full btn-secondary">Logout</button>
+              </form>
+            {% else %}
+              <a href="/login" class="px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">Sign in</a>
+              <a href="/register" class="px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">Get started</a>
+            {% endif %}
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      {% if flash %}
+        <div id="flash" class="mb-6 relative rounded-md p-4 {{ flash.type == 'success' ? 'bg-green-50 text-green-800' : flash.type == 'error' ? 'bg-red-50 text-red-800' : flash.type == 'warning' ? 'bg-yellow-50 text-yellow-800' : 'bg-blue-50 text-blue-800' }}">
+          <button type="button" aria-label="Dismiss" class="absolute top-3 right-3 rounded-md p-1 hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50" onclick="document.getElementById('flash').remove()">✕</button>
+          {{ flash.message }}
+        </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="border-t bg-white">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 text-sm text-gray-600 flex items-center justify-between">
+        <p>&copy; {{ (new Date()).getFullYear() }} connectED</p>
+        <p class="text-gray-400">Built for students</p>
+      </div>
+    </footer>
+
+    <script>
+      const menuBtn = document.getElementById('menuBtn');
+      const mobileMenu = document.getElementById('mobileMenu');
+      if (menuBtn && mobileMenu) {
+        menuBtn.addEventListener('click', () => {
+          const expanded = menuBtn.getAttribute('aria-expanded') === 'true'
+          menuBtn.setAttribute('aria-expanded', String(!expanded))
+          mobileMenu.classList.toggle('hidden')
+        })
+      }
+    </script>
+  </body>
+</html>
