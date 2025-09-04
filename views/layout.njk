@@ -24,6 +24,7 @@
             {% if currentUser %}
               <a href="/courses" class="text-sm font-medium text-gray-700 hover:text-primary">Courses</a>
               <a href="/courses/add" class="text-sm font-medium text-gray-700 hover:text-primary">Add Course</a>
+              <a href="/me/groups" class="text-sm font-medium text-gray-700 hover:text-primary">My Groups</a>
               <form action="/logout" method="POST" class="inline">
                 <button class="btn-secondary">Logout</button>
               </form>
@@ -45,6 +46,7 @@
             {% if currentUser %}
               <a href="/courses" class="px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">Courses</a>
               <a href="/courses/add" class="px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">Add Course</a>
+              <a href="/me/groups" class="px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">My Groups</a>
               <form action="/logout" method="POST" class="px-2 py-1">
                 <button class="w-full btn-secondary">Logout</button>
               </form>

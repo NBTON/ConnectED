@@ -56,3 +56,64 @@ npm run build:css
 
 ## Uploads
 Images are uploaded to `public/uploads/courses`. A default fallback (`public/Assets/subject-img.jpg`) is used if a course image is missing.
+
+---
+
+# Study Groups (Phase 2 MVP)
+
+Authenticated users can create per-course Study Groups, discover them from a Course detail page, and join via invite links. Minimal management is provided.
+
+## Data models
+
+### Group
+- name: String (required, 2–60 chars)
+- courseId: ObjectId (ref: `Course`, required, indexed)
+- ownerId: ObjectId (ref: `User`, required, indexed)
+- description: String (optional, max 500)
+- visibility: `public` | `private` (default `public`)
+- inviteToken: String (required, unique, indexed)
+- inviteTokenExpiresAt: Date (required, default now + 7 days)
+- maxMembers: Number (default 25, min 2, max 100)
+- timestamps: createdAt/updatedAt
+- Helpers:
+  - pre-validate hook generates invite token and sets expiry to 7 days if missing
+  - instance method `regenerateInvite()` resets token and extends expiry by 7 days
+- Indexes: `courseId + name` (compound), unique index on `inviteToken`
+
+### GroupMember
+- groupId: ObjectId (ref: `Group`, required, indexed)
+- userId: ObjectId (ref: `User`, required, indexed)
+- role: `owner` | `member` (default `member`)
+- joinedAt: Date (default now)
+- Unique compound index on `{ groupId, userId }` prevents duplicate memberships
+
+When a group is created, an owner membership is created automatically.
+
+## Routes
+- GET /courses/:courseId — Course detail with tabs (Overview | Study Groups). Requires login.
+- GET /groups/new?course=:courseId — New group form. Requires login.
+- POST /groups — Create group. Requires login.
+- GET /groups/:id — Group detail. Requires login.
+- POST /groups/:id/join — Join a public group. Requires login.
+- POST /groups/:id/leave — Leave a group. Owner cannot leave while other members exist. If owner is the only member, the group is deleted. Requires login.
+- POST /groups/:id/kick/:userId — Remove a member (owner-only). Requires login.
+- POST /groups/:id/invite/regenerate — Regenerate invite link (owner-only). Requires login.
+- GET /g/:token — Resolve invite. Redirects unauthenticated users to login and continues after login. Enforces 7-day expiry and capacity.
+- GET /me/groups — "My Groups" list. Requires login.
+
+## Behavior
+- Visibility: Private groups are only discoverable by their members or via invite link; explicit joins are allowed for public groups only.
+- Invite expiry: Joining via expired invite is blocked with a clear error; owners can regenerate a fresh invite.
+- Capacity: Enforced at join/invite; default 25, range 2–100.
+- Idempotent joins: Duplicate membership is prevented by a unique index.
+- Owner actions: Remove members, see/copy invite link with visible expiry, regenerate link.
+
+## UI
+- Courses list cards now link to a Course detail page ("View Course").
+- Course detail has tabs: Overview and Study Groups. The Groups tab lists groups with name, member count, and visibility, plus a button to create a group.
+- Group detail shows invite (owner only), members with roles and Kick buttons (owner only), and Join/Leave actions.
+- "My Groups" shows all memberships grouped by course.
+
+## Notes
+- Default maxMembers: 25. Maximum allowed: 100.
+- Sessions use `req.session.userId`; after login, redirects to any saved `returnTo` (e.g., invite links).

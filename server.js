@@ -37,10 +37,12 @@ app.use((req, res, next) => {
 const userRoutes = require("./routes/user_router")
 const courseRoutes = require("./routes/course-router")
 const subjectRedirectRoutes = require("./routes/subject-router")
+const groupRoutes = require("./routes/group-router")
 
 app.use("/", userRoutes)
 app.use("/", courseRoutes)
 app.use("/", subjectRedirectRoutes)
+app.use("/", groupRoutes)
 
 app.use((req, res) => {
   res.status(404)

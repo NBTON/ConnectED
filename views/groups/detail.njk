@@ -1,0 +1,95 @@
+{% extends "layout.njk" %}
+{% block content %}
+  <div class="flex items-center justify-between">
+    <div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-semibold">{{ group.name }}</h1>
+        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium {{ group.visibility == 'public' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700' }}">{{ group.visibility | capitalize }}</span>
+      </div>
+      <p class="mt-1 text-sm text-gray-600">Course: <a href="/courses/{{ course._id }}?tab=groups" class="text-primary hover:underline">{{ course.title }}</a></p>
+    </div>
+    <div>
+      <a href="/courses/{{ course._id }}?tab=groups" class="btn-secondary">Back</a>
+    </div>
+  </div>
+
+  {% if isOwner %}
+    <section class="mt-6">
+      <h2 class="text-lg font-semibold">Invite</h2>
+      <div class="mt-2 flex items-center gap-2">
+        <input type="text" id="inviteLink" class="input flex-1" readonly value="/g/{{ group.inviteToken }}" />
+        <button id="copyBtn" class="btn-secondary" type="button">Copy</button>
+        <form action="/groups/{{ group._id }}/invite/regenerate" method="POST" class="inline">
+          <button class="btn-secondary" type="submit">Regenerate</button>
+        </form>
+      </div>
+      <p id="expiryText" class="mt-1 text-sm text-gray-600">Invite expires soon.</p>
+    </section>
+  {% endif %}
+
+  <section class="mt-8">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-semibold">Members ({{ members | length }})</h2>
+      <div>
+        {% if myMembership %}
+          <form action="/groups/{{ group._id }}/leave" method="POST" class="inline">
+            <button class="btn-secondary" type="submit">Leave Group</button>
+          </form>
+        {% else %}
+          {% if group.visibility == 'public' %}
+            <form action="/groups/{{ group._id }}/join" method="POST" class="inline">
+              <button class="btn-primary" type="submit">Join Group</button>
+            </form>
+          {% else %}
+            <span class="text-sm text-gray-600">Private group — join via invite link.</span>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+    <ul class="mt-4 divide-y divide-gray-200 bg-white shadow rounded-md">
+      {% for m in members %}
+        <li class="p-4 flex items-center justify-between">
+          <div>
+            <div class="font-medium">{{ m.user?.username or 'User' }}</div>
+            <div class="text-sm text-gray-600">{{ m.role | capitalize }}</div>
+          </div>
+          {% if isOwner and m.role != 'owner' %}
+            <form action="/groups/{{ group._id }}/kick/{{ m.userId }}" method="POST">
+              <button class="btn-secondary" type="submit">Kick</button>
+            </form>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <script>
+    const expiresInMs = {{ expiresInMs | default(0) }}
+    function humanize(ms) {
+      const s = Math.floor(ms / 1000)
+      const d = Math.floor(s / 86400)
+      const h = Math.floor((s % 86400) / 3600)
+      const m = Math.floor((s % 3600) / 60)
+      if (d > 0) return `${d}d ${h}h ${m}m`
+      if (h > 0) return `${h}h ${m}m`
+      if (m > 0) return `${m}m`
+      return 'less than a minute'
+    }
+    const expiryText = document.getElementById('expiryText')
+    if (expiryText && expiresInMs > 0) {
+      expiryText.textContent = `Invite expires in ${humanize(expiresInMs)}`
+    }
+    const copyBtn = document.getElementById('copyBtn')
+    const inviteLink = document.getElementById('inviteLink')
+    if (copyBtn && inviteLink) {
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(inviteLink.value)
+          copyBtn.textContent = 'Copied!'
+          setTimeout(() => { copyBtn.textContent = 'Copy' }, 1500)
+        } catch (e) {}
+      })
+    }
+  </script>
+{% endblock %}
