@@ -1,95 +1,696 @@
 {% extends "layout.njk" %}
 {% block content %}
-  <div class="flex items-center justify-between">
-    <div>
-      <div class="flex items-center gap-3">
-        <h1 class="text-2xl font-semibold">{{ group.name }}</h1>
-        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium {{ group.visibility == 'public' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700' }}">{{ group.visibility | capitalize }}</span>
+<div class="min-h-screen bg-background">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Group Header -->
+    <div class="bg-white rounded-xl shadow-md border border-neutral/20 overflow-hidden mb-8">
+      <!-- Cover Photo Section -->
+      <div class="h-32 bg-gradient-to-r from-primary to-secondary relative">
+        <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+        <div class="absolute top-4 right-4">
+          <button class="bg-white/20 backdrop-blur-sm text-white p-2 rounded-lg hover:bg-white/30 transition-colors" aria-label="Change cover photo">
+            <i class="fas fa-camera" aria-hidden="true"></i>
+          </button>
+        </div>
       </div>
-      <p class="mt-1 text-sm text-gray-600">Course: <a href="/courses/{{ course._id }}?tab=groups" class="text-primary hover:underline">{{ course.title }}</a></p>
-    </div>
-    <div>
-      <a href="/courses/{{ course._id }}?tab=groups" class="btn-secondary">Back</a>
-    </div>
-  </div>
 
-  {% if isOwner %}
-    <section class="mt-6">
-      <h2 class="text-lg font-semibold">Invite</h2>
-      <div class="mt-2 flex items-center gap-2">
-        <input type="text" id="inviteLink" class="input flex-1" readonly value="/g/{{ group.inviteToken }}" />
-        <button id="copyBtn" class="btn-secondary" type="button">Copy</button>
-        <form action="/groups/{{ group._id }}/invite/regenerate" method="POST" class="inline">
-          <button class="btn-secondary" type="submit">Regenerate</button>
+      <!-- Group Info Section -->
+      <div class="px-6 pb-6">
+        <div class="flex flex-col lg:flex-row items-start lg:items-end space-y-4 lg:space-y-0 lg:space-x-6 -mt-12">
+          <!-- Group Avatar -->
+          <div class="w-24 h-24 bg-white rounded-full p-1 flex-shrink-0">
+            <div class="w-full h-full bg-primary/10 rounded-full flex items-center justify-center">
+              <i class="fas fa-users text-primary text-3xl"></i>
+            </div>
+          </div>
+
+          <!-- Group Info -->
+          <div class="flex-1 pt-12 lg:pt-0">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+              <div class="flex items-center space-x-3 mb-2 sm:mb-0">
+                <h1 class="text-2xl font-heading font-bold text-textPrimary">{{ group.name }}</h1>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-body font-medium {{ group.visibility == 'public' ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary' }}">
+                  <i class="fas {{ group.visibility == 'public' ? 'fa-globe' : 'fa-lock' }} mr-2" aria-hidden="true"></i>
+                  {{ group.visibility | capitalize }}
+                </span>
+              </div>
+              <a href="/courses/{{ course._id }}?tab=groups" class="btn-secondary flex items-center space-x-2" aria-label="Back to course groups">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                <span>Back to Course</span>
+              </a>
+            </div>
+
+            <p class="text-textSecondary font-body mb-4">
+              <i class="fas fa-book mr-2" aria-hidden="true"></i>
+              Course: <a href="/courses/{{ course._id }}?tab=groups" class="text-primary hover:text-indigo-600 font-medium">{{ course.title }}</a>
+            </p>
+
+            <div class="flex flex-wrap gap-3">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-body font-medium bg-primary/10 text-primary">
+                <i class="fas fa-users mr-2" aria-hidden="true"></i>
+                {{ members | length }} members
+              </span>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-body font-medium bg-secondary/10 text-secondary">
+                <i class="fas fa-calendar mr-2" aria-hidden="true"></i>
+                Active
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invite Members Section (Owner Only) -->
+    {% if isOwner %}
+    <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6 mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-heading font-semibold text-textPrimary">
+          <i class="fas fa-user-plus mr-2 text-primary" aria-hidden="true"></i>
+          Invite Members
+        </h2>
+        <form action="/groups/{{ group._id }}/invite/regenerate" method="POST" class="inline-block">
+          <button class="btn-secondary flex items-center space-x-2" type="submit" aria-label="Regenerate invite link">
+            <i class="fas fa-refresh" aria-hidden="true"></i>
+            <span>Regenerate</span>
+          </button>
         </form>
       </div>
-      <p id="expiryText" class="mt-1 text-sm text-gray-600">Invite expires soon.</p>
-    </section>
-  {% endif %}
 
-  <section class="mt-8">
-    <div class="flex items-center justify-between">
-      <h2 class="text-lg font-semibold">Members ({{ members | length }})</h2>
-      <div>
-        {% if myMembership %}
-          <form action="/groups/{{ group._id }}/leave" method="POST" class="inline">
-            <button class="btn-secondary" type="submit">Leave Group</button>
-          </form>
-        {% else %}
-          {% if group.visibility == 'public' %}
-            <form action="/groups/{{ group._id }}/join" method="POST" class="inline">
-              <button class="btn-primary" type="submit">Join Group</button>
-            </form>
-          {% else %}
-            <span class="text-sm text-gray-600">Private group — join via invite link.</span>
-          {% endif %}
-        {% endif %}
+      <div class="flex flex-col lg:flex-row items-start lg:items-center space-y-4 lg:space-y-0 lg:space-x-6">
+        <div class="flex-1">
+          <div class="flex items-center space-x-3">
+            <div class="flex-1">
+              <label for="inviteLink" class="block text-sm font-body font-medium text-textSecondary mb-2">Invite Link</label>
+              <div class="flex">
+                <div class="relative flex-1">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-link text-textSecondary" aria-hidden="true"></i>
+                  </div>
+                  <input type="text" id="inviteLink" class="input pl-10" readonly value="/g/{{ group.inviteToken }}" aria-label="Invite link">
+                </div>
+                <button id="copyBtn" class="btn-primary ml-3 flex items-center space-x-2" type="button" aria-label="Copy invite link">
+                  <i class="fas fa-copy" aria-hidden="true"></i>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <p id="expiryText" class="text-sm text-textSecondary mt-2">
+            <i class="fas fa-clock mr-1" aria-hidden="true"></i>
+            Invite expires soon
+          </p>
+        </div>
       </div>
     </div>
+    {% endif %}
 
-    <ul class="mt-4 divide-y divide-gray-200 bg-white shadow rounded-md">
-      {% for m in members %}
-        <li class="p-4 flex items-center justify-between">
-          <div>
-            <div class="font-medium">{{ m.user?.username or 'User' }}</div>
-            <div class="text-sm text-gray-600">{{ m.role | capitalize }}</div>
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <!-- Sidebar: Group Members & Quick Actions -->
+      <div class="lg:col-span-1 space-y-6">
+        <!-- Group Members -->
+        <div class="bg-white rounded-xl shadow-md border border-neutral/20">
+          <div class="p-6 border-b border-neutral/20">
+            <div class="flex items-center justify-between">
+              <h2 class="text-lg font-heading font-semibold text-textPrimary">
+                <i class="fas fa-users mr-2 text-primary" aria-hidden="true"></i>
+                Group Members
+              </h2>
+              <span class="bg-primary/10 text-primary text-sm font-body font-medium px-2 py-1 rounded-full">{{ members | length }}</span>
+            </div>
           </div>
-          {% if isOwner and m.role != 'owner' %}
-            <form action="/groups/{{ group._id }}/kick/{{ m.userId }}" method="POST">
-              <button class="btn-secondary" type="submit">Kick</button>
-            </form>
-          {% endif %}
-        </li>
-      {% endfor %}
-    </ul>
-  </section>
+          <div class="max-h-96 overflow-y-auto">
+            {% for m in members %}
+              <div class="p-4 border-b border-neutral/10 hover:bg-background transition-colors">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                      <i class="fas fa-user text-primary text-sm"></i>
+                    </div>
+                    <div>
+                      <div class="font-body font-semibold text-textPrimary text-sm">{{ m.user?.username or 'User' }}</div>
+                      <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-body font-medium {{ m.role == 'owner' ? 'bg-primary/10 text-primary' : m.role == 'admin' ? 'bg-secondary/10 text-secondary' : 'bg-neutral/10 text-textSecondary' }}">
+                        {{ m.role | capitalize }}
+                      </span>
+                    </div>
+                  </div>
+                  {% if isOwner and m.role != 'owner' %}
+                    <form action="/groups/{{ group._id }}/kick/{{ m.userId }}" method="POST" class="inline-block">
+                      <button class="text-error hover:text-red-700 p-1 rounded" type="submit" aria-label="Remove {{ m.user?.username or 'User' }} from group" title="Remove member">
+                        <i class="fas fa-user-times text-sm"></i>
+                      </button>
+                    </form>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+          <div class="p-6 border-t border-neutral/20">
+            {% if myMembership %}
+              <form action="/groups/{{ group._id }}/leave" method="POST" class="w-full">
+                <button class="btn-secondary w-full flex items-center justify-center space-x-2" type="submit" aria-label="Leave group">
+                  <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                  <span>Leave Group</span>
+                </button>
+              </form>
+            {% else %}
+              {% if group.visibility == 'public' %}
+                <form action="/groups/{{ group._id }}/join" method="POST" class="w-full">
+                  <button class="btn-primary w-full flex items-center justify-center space-x-2" type="submit" aria-label="Join group">
+                    <i class="fas fa-user-plus" aria-hidden="true"></i>
+                    <span>Join Group</span>
+                  </button>
+                </form>
+              {% else %}
+                <div class="text-center">
+                  <span class="inline-flex items-center px-3 py-2 rounded-full text-sm font-body font-medium bg-secondary/10 text-secondary">
+                    <i class="fas fa-lock mr-2" aria-hidden="true"></i>
+                    Private Group
+                  </span>
+                </div>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
 
-  <script>
-    const expiresInMs = {{ expiresInMs | default(0) }}
-    function humanize(ms) {
-      const s = Math.floor(ms / 1000)
-      const d = Math.floor(s / 86400)
-      const h = Math.floor((s % 86400) / 3600)
-      const m = Math.floor((s % 3600) / 60)
-      if (d > 0) return `${d}d ${h}h ${m}m`
-      if (h > 0) return `${h}h ${m}m`
-      if (m > 0) return `${m}m`
-      return 'less than a minute'
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6">
+          <h2 class="text-lg font-heading font-semibold text-textPrimary mb-4">
+            <i class="fas fa-bolt mr-2 text-coral-500" aria-hidden="true"></i>
+            Quick Actions
+          </h2>
+          <div class="space-y-3">
+            <button class="btn-secondary w-full flex items-center justify-center space-x-2" onclick="startVideoCall()">
+              <i class="fas fa-video" aria-hidden="true"></i>
+              <span>Start Video Call</span>
+            </button>
+            <button class="btn-secondary w-full flex items-center justify-center space-x-2" onclick="shareResource()">
+              <i class="fas fa-share" aria-hidden="true"></i>
+              <span>Share Resource</span>
+            </button>
+            <button class="btn-secondary w-full flex items-center justify-center space-x-2" onclick="createEvent()">
+              <i class="fas fa-calendar-plus" aria-hidden="true"></i>
+              <span>Create Event</span>
+            </button>
+            <button class="btn-secondary w-full flex items-center justify-center space-x-2" onclick="viewAnalytics()">
+              <i class="fas fa-chart-bar" aria-hidden="true"></i>
+              <span>View Analytics</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content: Tabbed Interface -->
+      <div class="lg:col-span-3">
+        <div class="bg-white rounded-xl shadow-md border border-neutral/20 overflow-hidden">
+          <!-- Tab Navigation -->
+          <div class="border-b border-neutral/20">
+            <nav class="flex overflow-x-auto" role="tablist" aria-label="Group sections">
+              <button class="tab-button active flex items-center space-x-2 px-6 py-4 text-sm font-body font-medium text-textSecondary border-b-2 border-transparent hover:text-primary hover:border-primary transition-colors whitespace-nowrap" role="tab" aria-selected="true" aria-controls="chat-tab" data-tab="chat" id="tab-chat">
+                <i class="fas fa-comments" aria-hidden="true"></i>
+                <span>Chat</span>
+              </button>
+              <button class="tab-button flex items-center space-x-2 px-6 py-4 text-sm font-body font-medium text-textSecondary border-b-2 border-transparent hover:text-primary hover:border-primary transition-colors whitespace-nowrap" role="tab" aria-selected="false" aria-controls="files-tab" data-tab="files" id="tab-files" tabindex="-1">
+                <i class="fas fa-folder" aria-hidden="true"></i>
+                <span>Files</span>
+              </button>
+              <button class="tab-button flex items-center space-x-2 px-6 py-4 text-sm font-body font-medium text-textSecondary border-b-2 border-transparent hover:text-primary hover:border-primary transition-colors whitespace-nowrap" role="tab" aria-selected="false" aria-controls="events-tab" data-tab="events" id="tab-events" tabindex="-1">
+                <i class="fas fa-calendar" aria-hidden="true"></i>
+                <span>Events</span>
+              </button>
+              <button class="tab-button flex items-center space-x-2 px-6 py-4 text-sm font-body font-medium text-textSecondary border-b-2 border-transparent hover:text-primary hover:border-primary transition-colors whitespace-nowrap" role="tab" aria-selected="false" aria-controls="activity-tab" data-tab="activity" id="tab-activity" tabindex="-1">
+                <i class="fas fa-history" aria-hidden="true"></i>
+                <span>Activity</span>
+              </button>
+            </nav>
+          </div>
+
+          <!-- Tab Content -->
+          <div class="tab-content">
+            <!-- Chat Tab -->
+            <div id="chat-tab" class="tab-pane active p-6" role="tabpanel" aria-labelledby="tab-chat">
+              <div class="space-y-4">
+                <div id="chat-messages" class="h-96 overflow-y-auto border border-neutral/20 rounded-lg p-4 bg-background">
+                  <div class="text-center text-textSecondary py-8">
+                    <i class="fas fa-comments text-4xl mb-4 opacity-50" aria-hidden="true"></i>
+                    <h3 class="font-heading font-semibold text-textPrimary mb-2">Group Chat</h3>
+                    <p class="font-body">Connecting to chat...</p>
+                  </div>
+                </div>
+                <div id="typing-indicator" class="text-sm text-textSecondary" style="display: none;">
+                  <i class="fas fa-circle-notch fa-spin mr-1" aria-hidden="true"></i>
+                  <span id="typing-users"></span> is typing...
+                </div>
+                <div class="flex items-center space-x-3">
+                  <div class="flex-1">
+                    <div class="relative">
+                      <input type="text" id="chat-input" class="input pr-12" placeholder="Type a message..." aria-label="Chat message">
+                      <button id="send-btn" class="absolute right-2 top-1/2 transform -translate-y-1/2 btn-primary p-2" type="button" aria-label="Send message">
+                        <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-sm text-textSecondary">
+                  <span id="online-status">Connecting...</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Files Tab -->
+            <div id="files-tab" class="tab-pane hidden p-6" role="tabpanel" aria-labelledby="tab-files">
+              <div class="space-y-6">
+                <div class="text-center p-8 border-2 border-dashed border-primary/30 rounded-xl bg-primary/5">
+                  <i class="fas fa-cloud-upload-alt text-5xl text-primary mb-4" aria-hidden="true"></i>
+                  <h3 class="text-lg font-heading font-semibold text-textPrimary mb-2">Share Study Materials</h3>
+                  <p class="text-textSecondary mb-4">Upload documents, notes, and resources for the group</p>
+                  <button class="btn-primary flex items-center space-x-2 mx-auto" aria-label="Upload file" disabled>
+                    <i class="fas fa-plus" aria-hidden="true"></i>
+                    <span>Upload Files</span>
+                  </button>
+                  <p class="text-sm text-textSecondary mt-2">File sharing coming in Phase 3</p>
+                </div>
+
+                <div>
+                  <h3 class="text-lg font-heading font-semibold text-textPrimary mb-4">Recent Files</h3>
+                  <div class="text-center py-8">
+                    <i class="fas fa-folder-open text-4xl text-textSecondary mb-4 opacity-50" aria-hidden="true"></i>
+                    <p class="text-textSecondary mb-2">No files shared yet</p>
+                    <p class="text-sm text-textSecondary">Be the first to share study materials!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Events Tab -->
+            <div id="events-tab" class="tab-pane hidden p-6" role="tabpanel" aria-labelledby="tab-events">
+              <div class="space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                  <h3 class="text-lg font-heading font-semibold text-textPrimary mb-4 sm:mb-0">Upcoming Events</h3>
+                  <button class="btn-primary flex items-center space-x-2" aria-label="Create new event" disabled>
+                    <i class="fas fa-plus" aria-hidden="true"></i>
+                    <span>Create Event</span>
+                  </button>
+                </div>
+
+                <div class="space-y-4">
+                  <div class="bg-background rounded-lg p-4 border border-neutral/10 hover:border-primary/20 transition-colors">
+                    <div class="flex items-start justify-between">
+                      <div class="flex-1">
+                        <h4 class="font-heading font-semibold text-textPrimary mb-2">
+                          <i class="fas fa-calendar-day text-primary mr-2" aria-hidden="true"></i>
+                          Study Session
+                        </h4>
+                        <p class="text-textSecondary text-sm mb-3">Group study session for upcoming exam</p>
+                        <div class="flex flex-wrap gap-2">
+                          <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-body font-medium bg-secondary/10 text-secondary">
+                            <i class="fas fa-clock mr-1" aria-hidden="true"></i>
+                            Tomorrow at 3:00 PM
+                          </span>
+                          <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-body font-medium bg-neutral/10 text-textSecondary">
+                            <i class="fas fa-user mr-1" aria-hidden="true"></i>
+                            Created by Group Owner
+                          </span>
+                        </div>
+                      </div>
+                      <button class="btn-secondary p-2" disabled aria-label="View event details">
+                        <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="text-center py-8">
+                    <i class="fas fa-calendar-plus text-4xl text-textSecondary mb-4 opacity-50" aria-hidden="true"></i>
+                    <p class="text-textSecondary mb-2">More events will be added through the platform</p>
+                    <p class="text-sm text-textSecondary">Event management coming in Phase 3</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Activity Tab -->
+            <div id="activity-tab" class="tab-pane hidden p-6" role="tabpanel" aria-labelledby="tab-activity">
+              <div class="space-y-6">
+                <h3 class="text-lg font-heading font-semibold text-textPrimary">Recent Activity</h3>
+
+                <div class="space-y-4">
+                  <div class="flex items-start space-x-4 p-4 bg-background rounded-lg border border-neutral/10">
+                    <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <i class="fas fa-user-plus text-primary" aria-hidden="true"></i>
+                    </div>
+                    <div class="flex-1">
+                      <p class="font-body text-textPrimary mb-1">
+                        <span class="font-semibold">John Doe</span> joined the group
+                      </p>
+                      <p class="text-sm text-textSecondary">2 hours ago</p>
+                    </div>
+                  </div>
+
+                  <div class="flex items-start space-x-4 p-4 bg-background rounded-lg border border-neutral/10">
+                    <div class="w-10 h-10 bg-coral-500/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <i class="fas fa-file-upload text-coral-500" aria-hidden="true"></i>
+                    </div>
+                    <div class="flex-1">
+                      <p class="font-body text-textPrimary mb-1">
+                        <span class="font-semibold">Sarah Smith</span> uploaded "Math Notes.pdf"
+                      </p>
+                      <p class="text-sm text-textSecondary">1 day ago</p>
+                    </div>
+                  </div>
+
+                  <div class="flex items-start space-x-4 p-4 bg-background rounded-lg border border-neutral/10">
+                    <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <i class="fas fa-calendar-plus text-secondary" aria-hidden="true"></i>
+                    </div>
+                    <div class="flex-1">
+                      <p class="font-body text-textPrimary mb-1">
+                        <span class="font-semibold">Group Owner</span> created "Study Session" event
+                      </p>
+                      <p class="text-sm text-textSecondary">2 days ago</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-center py-8">
+                  <p class="text-sm text-textSecondary">Activity tracking coming in Phase 3</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .tab-button {
+    @apply px-6 py-4 text-sm font-body font-medium text-textSecondary border-b-2 border-transparent hover:text-primary hover:border-primary transition-colors whitespace-nowrap;
+  }
+
+  .tab-button.active {
+    @apply text-primary border-primary;
+  }
+
+  .tab-pane {
+    @apply transition-opacity duration-300;
+  }
+
+  .member-item:hover {
+    @apply bg-background;
+  }
+
+  .upload-area:hover {
+    @apply bg-primary/5;
+  }
+
+  .activity-icon {
+    @apply flex-shrink-0;
+  }
+
+  .chat-messages {
+    background: linear-gradient(45deg, #f8fafc 25%, transparent 25%),
+                linear-gradient(-45deg, #f8fafc 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #f8fafc 75%),
+                linear-gradient(-45deg, transparent 75%, #f8fafc 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+
+  .message-bubble {
+    @apply max-w-[70%] break-words;
+  }
+
+  .message-item.text-end .message-bubble {
+    @apply ml-auto;
+  }
+
+  .system-message {
+    @apply opacity-70;
+  }
+
+  .notification-toast {
+    @apply fixed top-5 right-5 bg-white border border-neutral/20 rounded-lg p-4 shadow-lg z-50 max-w-sm animate-slide-in;
+  }
+
+  .notification-close {
+    @apply absolute top-2 right-2 bg-none border-none text-base cursor-pointer text-textSecondary hover:text-textPrimary;
+  }
+
+  @keyframes slide-in {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
     }
-    const expiryText = document.getElementById('expiryText')
-    if (expiryText && expiresInMs > 0) {
-      expiryText.textContent = `Invite expires in ${humanize(expiresInMs)}`
+    to {
+      transform: translateX(0);
+      opacity: 1;
     }
-    const copyBtn = document.getElementById('copyBtn')
-    const inviteLink = document.getElementById('inviteLink')
-    if (copyBtn && inviteLink) {
-      copyBtn.addEventListener('click', async () => {
-        try {
-          await navigator.clipboard.writeText(inviteLink.value)
-          copyBtn.textContent = 'Copied!'
-          setTimeout(() => { copyBtn.textContent = 'Copy' }, 1500)
-        } catch (e) {}
+  }
+</style>
+
+<script>
+  const expiresInMs = {{ expiresInMs | default(0) }}
+
+  function humanize(ms) {
+    const s = Math.floor(ms / 1000)
+    const d = Math.floor(s / 86400)
+    const h = Math.floor((s % 86400) / 3600)
+    const m = Math.floor((s % 3600) / 60)
+    if (d > 0) return `${d}d ${h}h ${m}m`
+    if (h > 0) return `${h}h ${m}m`
+    if (m > 0) return `${m}m`
+    return 'less than a minute'
+  }
+
+  const expiryText = document.getElementById('expiryText')
+  if (expiryText && expiresInMs > 0) {
+    expiryText.innerHTML = `<i class="fas fa-clock mr-1" aria-hidden="true"></i>Invite expires in ${humanize(expiresInMs)}`
+  }
+
+  const copyBtn = document.getElementById('copyBtn')
+  const inviteLink = document.getElementById('inviteLink')
+  if (copyBtn && inviteLink) {
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(inviteLink.value)
+        copyBtn.innerHTML = '<i class="fas fa-check mr-2" aria-hidden="true"></i>Copied!'
+        setTimeout(() => {
+          copyBtn.innerHTML = '<i class="fas fa-copy mr-2" aria-hidden="true"></i>Copy'
+        }, 1500)
+      } catch (e) {
+        console.error('Failed to copy:', e)
+      }
+    })
+  }
+
+  // Tab functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabButtons = document.querySelectorAll('.tab-button')
+    const tabPanes = document.querySelectorAll('.tab-pane')
+
+    tabButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const tabId = this.getAttribute('data-tab')
+
+        // Update active tab button
+        tabButtons.forEach(btn => {
+          btn.classList.remove('active')
+          btn.setAttribute('aria-selected', 'false')
+          btn.setAttribute('tabindex', '-1')
+        })
+        this.classList.add('active')
+        this.setAttribute('aria-selected', 'true')
+        this.setAttribute('tabindex', '0')
+
+        // Show corresponding tab pane
+        tabPanes.forEach(pane => {
+          pane.classList.add('hidden')
+          pane.setAttribute('aria-hidden', 'true')
+        })
+        const activePane = document.getElementById(`${tabId}-tab`)
+        activePane.classList.remove('hidden')
+        activePane.setAttribute('aria-hidden', 'false')
       })
+    })
+
+    // Initialize chat
+    initializeChat()
+  })
+
+  // Initialize chat when page loads
+  let chatSocket = null
+  const groupId = '{{ group._id }}'
+  const currentUser = {{ currentUser | dump | safe }}
+
+  function initializeChat() {
+    if (!currentUser) {
+      document.getElementById('chat-messages').innerHTML = `
+        <div class="text-center text-textSecondary py-8">
+          <i class="fas fa-sign-in-alt text-4xl mb-4 opacity-50" aria-hidden="true"></i>
+          <h3 class="font-heading font-semibold text-textPrimary mb-2">Please log in to chat</h3>
+          <p class="font-body">You need to be logged in to participate in group chat</p>
+        </div>
+      `
+      return
     }
-  </script>
+
+    // Initialize Socket.io connection
+    chatSocket = socketManager.connect(currentUser.id, 'session_token_placeholder')
+
+    chatSocket.on('socket_connected', () => {
+      console.log('Connected to chat server')
+      document.getElementById('online-status').textContent = 'Connected'
+
+      // Join the group chat room
+      socketManager.joinRoom(`group_${groupId}`, 'group')
+    })
+
+    chatSocket.on('socket_disconnected', () => {
+      document.getElementById('online-status').textContent = 'Disconnected'
+    })
+
+    // Handle incoming messages
+    socketManager.on('new_message', (message) => {
+      addMessageToChat(message)
+    })
+
+    // Handle typing indicators
+    socketManager.on('typing_users', (data) => {
+      updateTypingIndicator(data)
+    })
+
+    // Handle user join/leave
+    socketManager.on('user_joined', (data) => {
+      addSystemMessage(`${data.username} joined the chat`)
+    })
+
+    socketManager.on('user_left', (data) => {
+      addSystemMessage(`${data.username} left the chat`)
+    })
+
+    // Handle presence updates
+    socketManager.on('presence_update', (data) => {
+      updatePresenceIndicator(data)
+    })
+
+    // Set up chat input handlers
+    setupChatInput()
+  }
+
+  function setupChatInput() {
+    const chatInput = document.getElementById('chat-input')
+    const sendBtn = document.getElementById('send-btn')
+
+    // Send message on Enter key
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        sendMessage()
+      }
+    })
+
+    // Send message on button click
+    sendBtn.addEventListener('click', sendMessage)
+
+    // Handle typing indicators
+    let typingTimeout
+    chatInput.addEventListener('input', () => {
+      if (chatSocket && socketManager.isConnected) {
+        socketManager.startTyping()
+
+        clearTimeout(typingTimeout)
+        typingTimeout = setTimeout(() => {
+          socketManager.stopTyping()
+        }, 1000)
+      }
+    })
+  }
+
+  function sendMessage() {
+    const chatInput = document.getElementById('chat-input')
+    const message = chatInput.value.trim()
+
+    if (message && chatSocket && socketManager.isConnected) {
+      socketManager.sendMessage(message)
+      chatInput.value = ''
+      socketManager.stopTyping()
+    }
+  }
+
+  function addMessageToChat(message) {
+    const chatMessages = document.getElementById('chat-messages')
+    const messageEl = document.createElement('div')
+    messageEl.className = `message-item mb-3 ${message.senderId === currentUser.id ? 'text-end' : ''}`
+
+    const timestamp = new Date(message.createdAt).toLocaleTimeString()
+
+    messageEl.innerHTML = `
+      <div class="message-bubble inline-block p-3 rounded-lg ${message.senderId === currentUser.id ? 'bg-primary text-white' : 'bg-background border border-neutral/10'}">
+        <div class="message-header text-xs ${message.senderId === currentUser.id ? 'text-white/70' : 'text-textSecondary'} mb-1">
+          <strong>${message.senderId.username}</strong> • ${timestamp}
+        </div>
+        <div class="message-content">
+          ${message.content}
+        </div>
+      </div>
+    `
+
+    chatMessages.appendChild(messageEl)
+    chatMessages.scrollTop = chatMessages.scrollHeight
+  }
+
+  function addSystemMessage(text) {
+    const chatMessages = document.getElementById('chat-messages')
+    const messageEl = document.createElement('div')
+    messageEl.className = 'system-message text-center mb-3'
+
+    messageEl.innerHTML = `
+      <small class="text-textSecondary">
+        <i class="fas fa-info-circle mr-1" aria-hidden="true"></i>${text}
+      </small>
+    `
+
+    chatMessages.appendChild(messageEl)
+    chatMessages.scrollTop = chatMessages.scrollHeight
+  }
+
+  function updateTypingIndicator(data) {
+    const typingIndicator = document.getElementById('typing-indicator')
+    const typingUsers = document.getElementById('typing-users')
+
+    if (data.users && data.users.length > 0) {
+      const usernames = data.users.map(u => u.username).join(', ')
+      typingUsers.textContent = usernames
+      typingIndicator.style.display = 'block'
+    } else {
+      typingIndicator.style.display = 'none'
+    }
+  }
+
+  function updatePresenceIndicator(data) {
+    // Update online status in the UI
+    const statusEl = document.getElementById('online-status')
+    if (statusEl) {
+      statusEl.textContent = data.status === 'online' ? 'Online' : 'Offline'
+      statusEl.className = data.status === 'online' ? 'text-success' : 'text-textSecondary'
+    }
+  }
+
+  // Quick action functions (placeholders for future implementation)
+  function startVideoCall() {
+    alert('Video call feature coming in Phase 3!')
+  }
+
+  function shareResource() {
+    alert('Resource sharing feature coming in Phase 3!')
+  }
+
+  function createEvent() {
+    alert('Event creation feature coming in Phase 3!')
+  }
+
+  function viewAnalytics() {
+    alert('Analytics feature coming in Phase 3!')
+  }
+</script>
 {% endblock %}

@@ -1,39 +1,465 @@
 {% extends "layout.njk" %}
 {% block content %}
-<div class="max-w-md mx-auto">
-  <h1 class="text-2xl font-semibold">Create your account</h1>
-  <form action="/register" method="POST" class="mt-6 space-y-4">
-    <div>
-      <label for="email" class="label">Email</label>
-      <input id="email" name="email" type="email" required class="input mt-1" placeholder="Enter your email" />
-      {% if flash and flash.errors and flash.errors.email %}
-        <p class="error-text">{{ flash.errors.email }}</p>
-      {% endif %}
+<div class="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl w-full mx-auto">
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+      <div class="md:flex">
+        <!-- Left Column: Registration Form -->
+        <div class="md:w-1/2 p-8 md:p-12">
+          <div class="text-center mb-8">
+            <div class="mx-auto h-16 w-auto flex justify-center mb-6">
+              <img src="/Assets/ConnectEdLogo.png" alt="ConnectEd Logo" class="h-16 w-auto" />
+            </div>
+            <h2 class="text-3xl font-heading font-bold text-textPrimary">Join ConnectEd</h2>
+            <p class="mt-2 text-textSecondary">Create your account to start learning</p>
+          </div>
+
+          <!-- Social Login Options -->
+          <div class="mb-8">
+            <div class="grid grid-cols-2 gap-4">
+              <button class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <i class="fab fa-google text-red-500 mr-2"></i>
+                <span class="text-sm font-medium">Google</span>
+              </button>
+              <button class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <i class="fab fa-facebook text-blue-600 mr-2"></i>
+                <span class="text-sm font-medium">Facebook</span>
+              </button>
+            </div>
+            <div class="relative mt-6">
+              <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300"></div>
+              </div>
+              <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-white text-textSecondary">Or continue with email</span>
+              </div>
+            </div>
+          </div>
+
+          <form action="/register" method="POST" class="space-y-6" novalidate>
+            <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+            
+            <!-- Name Fields -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-2">
+                <label for="firstName" class="block text-sm font-medium text-textPrimary">First Name <span class="text-error">*</span></label>
+                <input id="firstName" name="firstName" type="text" required
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors placeholder:text-textSecondary"
+                       placeholder="First name" autocomplete="given-name" aria-describedby="firstName-error" />
+                {% if flash and flash.errors and flash.errors.firstName %}
+                  <p id="firstName-error" class="text-sm text-error">{{ flash.errors.firstName }}</p>
+                {% endif %}
+              </div>
+              <div class="space-y-2">
+                <label for="lastName" class="block text-sm font-medium text-textPrimary">Last Name <span class="text-error">*</span></label>
+                <input id="lastName" name="lastName" type="text" required
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors placeholder:text-textSecondary"
+                       placeholder="Last name" autocomplete="family-name" aria-describedby="lastName-error" />
+                {% if flash and flash.errors and flash.errors.lastName %}
+                  <p id="lastName-error" class="text-sm text-error">{{ flash.errors.lastName }}</p>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Email Field -->
+            <div class="space-y-2">
+              <label for="email" class="block text-sm font-medium text-textPrimary">Email Address <span class="text-error">*</span></label>
+              <input id="email" name="email" type="email" required
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors placeholder:text-textSecondary"
+                     placeholder="Enter your email" autocomplete="email" aria-describedby="email-error" />
+              {% if flash and flash.errors and flash.errors.email %}
+                <p id="email-error" class="text-sm text-error">{{ flash.errors.email }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Password Field -->
+            <div class="space-y-2">
+              <label for="password" class="block text-sm font-medium text-textPrimary">Password <span class="text-error">*</span></label>
+              <div class="relative">
+                <input id="password" name="password" type="password" minlength="6" required
+                       class="w-full pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors placeholder:text-textSecondary"
+                       placeholder="Create a password" autocomplete="new-password" aria-describedby="password-error" />
+                <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 pr-3 flex items-center text-textSecondary hover:text-textPrimary" aria-label="Toggle password visibility">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+              
+              <!-- Password Strength Meter -->
+              <div class="mt-2">
+                <div class="flex space-x-1 mb-1">
+                  <div class="h-1 flex-1 bg-gray-200 rounded-full" id="strength-bar-1"></div>
+                  <div class="h-1 flex-1 bg-gray-200 rounded-full" id="strength-bar-2"></div>
+                  <div class="h-1 flex-1 bg-gray-200 rounded-full" id="strength-bar-3"></div>
+                  <div class="h-1 flex-1 bg-gray-200 rounded-full" id="strength-bar-4"></div>
+                </div>
+                <p class="text-xs text-textSecondary" id="password-strength-text">Password strength: None</p>
+              </div>
+              
+              {% if flash and flash.errors and flash.errors.password %}
+                <p id="password-error" class="text-sm text-error">{{ flash.errors.password }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Confirm Password Field -->
+            <div class="space-y-2">
+              <label for="confirmPassword" class="block text-sm font-medium text-textPrimary">Confirm Password <span class="text-error">*</span></label>
+              <div class="relative">
+                <input id="confirmPassword" name="confirmPassword" type="password" minlength="6" required
+                       class="w-full pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors placeholder:text-textSecondary"
+                       placeholder="Re-enter your password" autocomplete="new-password" aria-describedby="confirm-password-error" />
+                <button type="button" id="toggle-confirm-password" class="absolute inset-y-0 right-0 pr-3 flex items-center text-textSecondary hover:text-textPrimary" aria-label="Toggle confirm password visibility">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+              {% if flash and flash.errors and flash.errors.confirmPassword %}
+                <p id="confirm-password-error" class="text-sm text-error">{{ flash.errors.confirmPassword }}</p>
+              {% endif %}
+            </div>
+
+            <!-- Terms Agreement -->
+            <div class="flex items-start">
+              <div class="flex items-center h-5">
+                <input id="terms" name="terms" type="checkbox" required
+                       class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
+              </div>
+              <div class="ml-3 text-sm">
+                <label for="terms" class="text-textSecondary">
+                  I agree to the <a href="/terms" class="font-medium text-indigo-600 hover:text-indigo-500">Terms of Service</a> and <a href="/privacy" class="font-medium text-indigo-600 hover:text-indigo-500">Privacy Policy</a>
+                </label>
+              </div>
+            </div>
+            {% if flash and flash.errors and flash.errors.terms %}
+              <p class="text-sm text-error">{{ flash.errors.terms }}</p>
+            {% endif %}
+
+            <!-- Submit Button -->
+            <div>
+              <button type="submit" id="submit-btn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <span id="btn-text">Create Account</span>
+                <div id="loading-spinner" class="hidden ml-2 animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              </button>
+            </div>
+
+            <!-- Login Link -->
+            <div class="text-center">
+              <p class="text-sm text-textSecondary">
+                Already have an account? <a href="/login" class="font-medium text-indigo-600 hover:text-indigo-500">Sign in</a>
+              </p>
+            </div>
+          </form>
+        </div>
+
+        <!-- Right Column: Benefits Section -->
+        <div class="md:w-1/2 bg-indigo-600 text-white p-8 md:p-12 flex flex-col justify-center">
+          <div class="text-center md:text-left">
+            <h3 class="text-2xl font-heading font-bold mb-4">Join Our Learning Community</h3>
+            <p class="text-indigo-100 mb-8">Connect with thousands of students and educators worldwide</p>
+            
+            <div class="space-y-6 mb-8">
+              <div class="flex items-start">
+                <div class="flex-shrink-0">
+                  <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center">
+                    <i class="fas fa-users text-sm"></i>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <h4 class="font-medium">10,000+ Students</h4>
+                  <p class="text-indigo-200 text-sm">Join a vibrant community of learners</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start">
+                <div class="flex-shrink-0">
+                  <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center">
+                    <i class="fas fa-graduation-cap text-sm"></i>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <h4 class="font-medium">Expert Instructors</h4>
+                  <p class="text-indigo-200 text-sm">Learn from industry professionals</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start">
+                <div class="flex-shrink-0">
+                  <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center">
+                    <i class="fas fa-chart-line text-sm"></i>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <h4 class="font-medium">Track Progress</h4>
+                  <p class="text-indigo-200 text-sm">Monitor your learning journey</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-indigo-700 rounded-lg p-4">
+              <p class="text-sm text-indigo-100">
+                "ConnectEd helped me connect with study partners and excel in my courses. The community support is incredible!"
+              </p>
+              <p class="text-sm font-medium mt-2">- Sarah, Computer Science Student</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div>
-      <label for="username" class="label">Username</label>
-      <input id="username" name="username" type="text" required class="input mt-1" placeholder="Choose a username" />
-      {% if flash and flash.errors and flash.errors.username %}
-        <p class="error-text">{{ flash.errors.username }}</p>
-      {% endif %}
-    </div>
-    <div>
-      <label for="password" class="label">Password</label>
-      <input id="password" name="password" type="password" minlength="6" required class="input mt-1" placeholder="Create a password" />
-      <p class="help-text">At least 6 characters.</p>
-      {% if flash and flash.errors and flash.errors.password %}
-        <p class="error-text">{{ flash.errors.password }}</p>
-      {% endif %}
-    </div>
-    <div>
-      <label for="confirmPassword" class="label">Confirm password</label>
-      <input id="confirmPassword" name="confirmPassword" type="password" minlength="6" required class="input mt-1" placeholder="Re-enter your password" />
-      {% if flash and flash.errors and flash.errors.confirmPassword %}
-        <p class="error-text">{{ flash.errors.confirmPassword }}</p>
-      {% endif %}
-    </div>
-    <button type="submit" class="w-full btn-primary">Create account</button>
-    <p class="text-sm text-gray-600 text-center">Already have an account? <a href="/login" class="text-primary hover:underline">Sign in</a></p>
-  </form>
+  </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('submit-btn')?.closest('form');
+  const submitBtn = document.getElementById('submit-btn');
+  const btnText = document.getElementById('btn-text');
+  const loadingSpinner = document.getElementById('loading-spinner');
+  const passwordInput = document.getElementById('password');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+  const togglePassword = document.getElementById('toggle-password');
+  const toggleConfirmPassword = document.getElementById('toggle-confirm-password');
+  const passwordIcon = togglePassword?.querySelector('i');
+  const confirmPasswordIcon = toggleConfirmPassword?.querySelector('i');
+  const strengthBars = [
+    document.getElementById('strength-bar-1'),
+    document.getElementById('strength-bar-2'),
+    document.getElementById('strength-bar-3'),
+    document.getElementById('strength-bar-4')
+  ];
+  const strengthText = document.getElementById('password-strength-text');
+
+  // Password strength calculation
+  function calculatePasswordStrength(password) {
+    let strength = 0;
+    if (password.length >= 6) strength++;
+    if (password.length >= 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+    return Math.min(strength, 4);
+  }
+
+  function updatePasswordStrength() {
+    const password = passwordInput.value;
+    const strength = calculatePasswordStrength(password);
+    
+    // Update strength bars
+    strengthBars.forEach((bar, index) => {
+      if (index < strength) {
+        let colorClass;
+        if (strength === 1) colorClass = 'bg-red-500';
+        else if (strength === 2) colorClass = 'bg-orange-500';
+        else if (strength === 3) colorClass = 'bg-yellow-500';
+        else if (strength === 4) colorClass = 'bg-green-500';
+        bar.className = `h-1 flex-1 ${colorClass} rounded-full`;
+      } else {
+        bar.className = 'h-1 flex-1 bg-gray-200 rounded-full';
+      }
+    });
+    
+    // Update strength text
+    const strengthLabels = ['None', 'Weak', 'Fair', 'Good', 'Strong'];
+    strengthText.textContent = `Password strength: ${strengthLabels[strength]}`;
+  }
+
+  // Password toggle functionality
+  if (togglePassword && passwordInput && passwordIcon) {
+    togglePassword.addEventListener('click', function() {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      passwordIcon.classList.toggle('fa-eye');
+      passwordIcon.classList.toggle('fa-eye-slash');
+    });
+  }
+
+  if (toggleConfirmPassword && confirmPasswordInput && confirmPasswordIcon) {
+    toggleConfirmPassword.addEventListener('click', function() {
+      const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      confirmPasswordInput.setAttribute('type', type);
+      confirmPasswordIcon.classList.toggle('fa-eye');
+      confirmPasswordIcon.classList.toggle('fa-eye-slash');
+    });
+  }
+
+  // Real-time password matching validation
+  if (passwordInput && confirmPasswordInput) {
+    function validatePasswordMatch() {
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+      
+      if (confirmPassword && password !== confirmPassword) {
+        confirmPasswordInput.classList.add('border-error', 'focus:ring-error');
+      } else {
+        confirmPasswordInput.classList.remove('border-error', 'focus:ring-error');
+      }
+    }
+
+    confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+    passwordInput.addEventListener('input', validatePasswordMatch);
+    passwordInput.addEventListener('input', updatePasswordStrength);
+  }
+
+  // Form submission with loading state
+  if (form && submitBtn) {
+    form.addEventListener('submit', function(e) {
+      const firstName = document.getElementById('firstName');
+      const lastName = document.getElementById('lastName');
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      const confirmPassword = document.getElementById('confirmPassword');
+      const terms = document.getElementById('terms');
+      let valid = true;
+
+      // Reset styling
+      [firstName, lastName, email, password, confirmPassword].forEach(field => {
+        if (field) {
+          field.classList.remove('border-error', 'focus:ring-error');
+        }
+      });
+
+      // Validation
+      if (!firstName?.value.trim()) {
+        firstName?.classList.add('border-error', 'focus:ring-error');
+        valid = false;
+      }
+
+      if (!lastName?.value.trim()) {
+        lastName?.classList.add('border-error', 'focus:ring-error');
+        valid = false;
+      }
+
+      if (!email?.value.trim()) {
+        email?.classList.add('border-error', 'focus:ring-error');
+        valid = false;
+      }
+
+      if (!password?.value || password.value.length < 6) {
+        password?.classList.add('border-error', 'focus:ring-error');
+        valid = false;
+      }
+
+      if (!confirmPassword?.value || confirmPassword.value !== password?.value) {
+        confirmPassword?.classList.add('border-error', 'focus:ring-error');
+        valid = false;
+      }
+
+      if (!terms?.checked) {
+        valid = false;
+      }
+
+      if (!valid) {
+        e.preventDefault();
+        firstName?.focus();
+        return;
+      }
+
+      // Show loading state
+      submitBtn.disabled = true;
+      btnText.textContent = 'Creating Account...';
+      loadingSpinner.classList.remove('hidden');
+    });
+  }
+});
+</script>
+{% endblock %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('submit-btn').closest('form');
+  const submitBtn = document.getElementById('submit-btn');
+  const btnText = document.getElementById('btn-text');
+  const loadingSpinner = document.getElementById('loading-spinner');
+  const passwordInput = document.getElementById('password');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+  const togglePassword = document.getElementById('toggle-password');
+  const toggleConfirmPassword = document.getElementById('toggle-confirm-password');
+  const passwordIcon = togglePassword?.querySelector('i');
+  const confirmPasswordIcon = toggleConfirmPassword?.querySelector('i');
+
+  // Password toggle functionality
+  if (togglePassword && passwordInput && passwordIcon) {
+    togglePassword.addEventListener('click', function() {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      passwordIcon.classList.toggle('fa-eye');
+      passwordIcon.classList.toggle('fa-eye-slash');
+    });
+  }
+
+  if (toggleConfirmPassword && confirmPasswordInput && confirmPasswordIcon) {
+    toggleConfirmPassword.addEventListener('click', function() {
+      const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      confirmPasswordInput.setAttribute('type', type);
+      confirmPasswordIcon.classList.toggle('fa-eye');
+      confirmPasswordIcon.classList.toggle('fa-eye-slash');
+    });
+  }
+
+  // Real-time password matching validation
+  if (passwordInput && confirmPasswordInput) {
+    function validatePasswordMatch() {
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+      
+      if (confirmPassword && password !== confirmPassword) {
+        confirmPasswordInput.classList.add('border-error', 'focus:ring-error');
+        // Could add a message here if needed
+      } else {
+        confirmPasswordInput.classList.remove('border-error', 'focus:ring-error');
+      }
+    }
+
+    confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+    passwordInput.addEventListener('input', validatePasswordMatch);
+  }
+
+  // Form submission with loading state
+  if (form && submitBtn) {
+    form.addEventListener('submit', function(e) {
+      const email = document.getElementById('email');
+      const username = document.getElementById('username');
+      const password = document.getElementById('password');
+      const confirmPassword = document.getElementById('confirmPassword');
+      let valid = true;
+
+      // Reset styling
+      [email, username, password, confirmPassword].forEach(field => {
+        if (field) {
+          field.classList.remove('border-error', 'focus:ring-error');
+        }
+      });
+
+      // Validation
+      if (!email?.value.trim()) {
+        email?.classList.add('border-error', 'focus:ring-error');
+        valid = false;
+      }
+
+      if (!username?.value.trim()) {
+        username?.classList.add('border-error', 'focus:ring-error');
+        valid = false;
+      }
+
+      if (!password?.value || password.value.length < 6) {
+        password?.classList.add('border-error', 'focus:ring-error');
+        valid = false;
+      }
+
+      if (!confirmPassword?.value || confirmPassword.value !== password?.value) {
+        confirmPassword?.classList.add('border-error', 'focus:ring-error');
+        valid = false;
+      }
+
+      if (!valid) {
+        e.preventDefault();
+        email?.focus();
+        return;
+      }
+
+      // Show loading state
+      submitBtn.disabled = true;
+      btnText.textContent = 'Creating Account...';
+      loadingSpinner.classList.remove('hidden');
+    });
+  }
+});
+</script>
 {% endblock %}

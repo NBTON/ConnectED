@@ -1,28 +1,115 @@
 {% extends "layout.njk" %}
 {% block content %}
-<h1 class="text-2xl font-semibold">Add Course</h1>
-<form action="/courses/add" method="POST" enctype="multipart/form-data" class="mt-6 space-y-6 max-w-xl">
-  <div>
-    <label for="title" class="label">Title</label>
-    <input type="text" id="title" name="title" required class="input mt-1" />
-    <p class="help-text">Provide a concise course title.</p>
-  </div>
+<div class="container mx-auto px-4 py-8 max-w-2xl">
+  <h1 class="text-3xl font-bold text-textPrimary mb-2">Add New Course</h1>
+  <p class="text-textSecondary mb-8">Create a new course to share with the ConnectED community</p>
+  
+  <form action="/courses/add" method="POST" enctype="multipart/form-data" id="course-form" class="space-y-6 bg-white rounded-xl p-8 shadow-md border border-neutral/20">
+    <!-- Title Field -->
+    <div>
+      <label for="title" class="block text-sm font-semibold text-textPrimary mb-2">Course Title <span class="text-error">*</span></label>
+      <input type="text" id="title" name="title" required aria-describedby="title-error title-help"
+             class="w-full px-4 py-3 border border-neutral/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+             placeholder="Enter course title" />
+      <p id="title-help" class="mt-1 text-sm text-textSecondary">Provide a concise and descriptive course title.</p>
+      <p id="title-error" class="mt-1 text-sm text-error hidden">Please enter a valid course title.</p>
+    </div>
 
-  <div>
-    <label for="linktoTheCall" class="label">Link to the call</label>
-    <textarea id="linktoTheCall" name="linktoTheCall" rows="3" required class="input mt-1"></textarea>
-    <p class="help-text">Paste a meeting link or resource URL.</p>
-  </div>
+    <!-- Description/Link Field -->
+    <div>
+      <label for="linktoTheCall" class="block text-sm font-semibold text-textPrimary mb-2">Meeting Link/Description <span class="text-error">*</span></label>
+      <textarea id="linktoTheCall" name="linktoTheCall" rows="4" required aria-describedby="link-error link-help"
+                class="w-full px-4 py-3 border border-neutral/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors resize-vertical"
+                placeholder="Paste meeting link or provide course description..."></textarea>
+      <p id="link-help" class="mt-1 text-sm text-textSecondary">Paste a meeting link (Zoom, Google Meet, etc.) or provide detailed course information.</p>
+      <p id="link-error" class="mt-1 text-sm text-error hidden">Please provide a valid meeting link or description.</p>
+    </div>
 
-  <div>
-    <label for="image" class="label">Course image</label>
-    <input type="file" id="image" name="image" accept="image/*" class="mt-1 block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-orange-600" />
-    <p class="help-text">Optional. If not provided, a default image will be used.</p>
-  </div>
+    <!-- Image Upload -->
+    <div>
+      <label for="image" class="block text-sm font-semibold text-textPrimary mb-2">Course Image (Optional)</label>
+      <input type="file" id="image" name="image" accept="image/*" aria-label="Upload course image"
+             class="w-full px-4 py-3 border border-neutral/30 rounded-lg text-sm text-textSecondary file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-blue-700 transition-colors" />
+      <p class="mt-1 text-sm text-textSecondary">Upload an image to represent your course. Recommended size: 800x400px. Default image will be used if none provided.</p>
+      <div id="image-preview" class="mt-3 hidden">
+        <img id="preview-img" class="max-w-full h-32 object-cover rounded-lg border" alt="Course image preview" />
+      </div>
+    </div>
 
-  <div class="flex gap-3">
-    <button type="submit" class="btn-primary">Create course</button>
-    <a href="/courses" class="btn-secondary">Cancel</a>
-  </div>
-</form>
+    <!-- Submit Buttons -->
+    <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-neutral/20">
+      <button type="submit" id="submit-btn" class="flex-1 inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-semibold rounded-lg shadow-lg hover:shadow-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Create new course">
+        <span id="btn-text">Create Course</span>
+        <div id="loading-spinner" class="hidden ml-2 animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+      </button>
+      <a href="/courses" class="flex-1 inline-flex items-center justify-center px-6 py-3 bg-neutral text-textPrimary font-semibold rounded-lg border border-neutral/30 hover:bg-neutral/50 focus:outline-none focus:ring-2 focus:ring-neutral focus:ring-offset-2 transition-all duration-300" aria-label="Cancel and return to courses list">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('course-form');
+  const submitBtn = document.getElementById('submit-btn');
+  const btnText = document.getElementById('btn-text');
+  const loadingSpinner = document.getElementById('loading-spinner');
+  const imageInput = document.getElementById('image');
+  const previewDiv = document.getElementById('image-preview');
+  const previewImg = document.getElementById('preview-img');
+
+  // Image preview
+  imageInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        previewImg.src = e.target.result;
+        previewDiv.classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    } else {
+      previewDiv.classList.add('hidden');
+    }
+  });
+
+  // Form validation and loading state
+  form.addEventListener('submit', function(e) {
+    // Basic client-side validation
+    const title = document.getElementById('title');
+    const link = document.getElementById('linktoTheCall');
+    let isValid = true;
+
+    // Clear previous errors
+    document.querySelectorAll('[id$="-error"]').forEach(el => el.classList.add('hidden'));
+
+    // Validate title
+    if (!title.value.trim()) {
+      document.getElementById('title-error').classList.remove('hidden');
+      title.classList.add('border-error', 'focus:ring-error');
+      isValid = false;
+    } else {
+      title.classList.remove('border-error', 'focus:ring-error');
+    }
+
+    // Validate link/description
+    if (!link.value.trim()) {
+      document.getElementById('link-error').classList.remove('hidden');
+      link.classList.add('border-error', 'focus:ring-error');
+      isValid = false;
+    } else {
+      link.classList.remove('border-error', 'focus:ring-error');
+    }
+
+    if (!isValid) {
+      e.preventDefault();
+      return;
+    }
+
+    // Show loading state
+    submitBtn.disabled = true;
+    btnText.textContent = 'Creating...';
+    loadingSpinner.classList.remove('hidden');
+  });
+});
+</script>
 {% endblock %}

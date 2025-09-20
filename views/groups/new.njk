@@ -1,42 +1,169 @@
 {% extends "layout.njk" %}
 {% block content %}
-  <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-semibold">Create Study Group</h1>
-    <a href="/courses/{{ course._id }}?tab=groups" class="btn-secondary">Back</a>
+<div class="min-h-screen bg-background">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-heading font-bold text-textPrimary mb-2">Create Study Group</h1>
+        <p class="text-textSecondary font-body">Set up a collaborative space for your course</p>
+      </div>
+      <a href="/courses/{{ course._id }}?tab=groups" class="btn-secondary flex items-center space-x-2">
+        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+        <span>Back to Course</span>
+      </a>
+    </div>
+
+    <!-- Create Group Form -->
+    <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-8">
+      <form action="/groups" method="POST" class="space-y-6">
+        <input type="hidden" name="courseId" value="{{ course._id }}" />
+
+        <!-- Group Name -->
+        <div>
+          <label for="name" class="block text-sm font-body font-medium text-textPrimary mb-2">
+            Group Name <span class="text-error">*</span>
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value="{{ values.name }}"
+            class="input"
+            required
+            minlength="2"
+            maxlength="60"
+            placeholder="Enter a descriptive name for your study group"
+            aria-describedby="name-help"
+          />
+          <p id="name-help" class="mt-1 text-sm text-textSecondary">
+            Choose a name that reflects your group's focus or course topic
+          </p>
+          {% if errors.name %}<p class="mt-1 text-sm text-error">{{ errors.name }}</p>{% endif %}
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label for="description" class="block text-sm font-body font-medium text-textPrimary mb-2">
+            Description
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            rows="4"
+            maxlength="500"
+            class="input"
+            placeholder="Describe your group's purpose, goals, and what members can expect..."
+            aria-describedby="description-help"
+          >{{ values.description }}</textarea>
+          <p id="description-help" class="mt-1 text-sm text-textSecondary">
+            Help potential members understand what your group is about (optional)
+          </p>
+          {% if errors.description %}<p class="mt-1 text-sm text-error">{{ errors.description }}</p>{% endif %}
+        </div>
+
+        <!-- Settings Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Visibility -->
+          <div>
+            <label for="visibility" class="block text-sm font-body font-medium text-textPrimary mb-2">
+              Visibility
+            </label>
+            <select id="visibility" name="visibility" class="input" aria-describedby="visibility-help">
+              <option value="public" {{ values.visibility == 'public' ? 'selected' : '' }}>Public - Anyone can join</option>
+              <option value="private" {{ values.visibility == 'private' ? 'selected' : '' }}>Private - Invite only</option>
+            </select>
+            <p id="visibility-help" class="mt-1 text-sm text-textSecondary">
+              Public groups appear in course listings, private groups require invitations
+            </p>
+          </div>
+
+          <!-- Max Members -->
+          <div>
+            <label for="maxMembers" class="block text-sm font-body font-medium text-textPrimary mb-2">
+              Max Members
+            </label>
+            <input
+              type="number"
+              id="maxMembers"
+              name="maxMembers"
+              min="2"
+              max="100"
+              value="{{ values.maxMembers or 25 }}"
+              class="input"
+              aria-describedby="maxMembers-help"
+            />
+            <p id="maxMembers-help" class="mt-1 text-sm text-textSecondary">
+              Set a limit between 2-100 members (recommended: 10-25 for focused discussions)
+            </p>
+            {% if errors.maxMembers %}<p class="mt-1 text-sm text-error">{{ errors.maxMembers }}</p>{% endif %}
+          </div>
+        </div>
+
+        <!-- Additional Options -->
+        <div class="border-t border-neutral/20 pt-6">
+          <h3 class="text-lg font-heading font-semibold text-textPrimary mb-4">Additional Settings</h3>
+          <div class="space-y-4">
+            <div class="flex items-start space-x-3">
+              <input type="checkbox" id="allowFileUploads" name="allowFileUploads" class="rounded text-primary focus:ring-primary mt-1" checked>
+              <div>
+                <label for="allowFileUploads" class="text-sm font-body font-medium text-textPrimary">
+                  Allow members to share files and resources
+                </label>
+                <p class="text-sm text-textSecondary">Members can upload documents, notes, and study materials</p>
+              </div>
+            </div>
+
+            <div class="flex items-start space-x-3">
+              <input type="checkbox" id="enableEvents" name="enableEvents" class="rounded text-primary focus:ring-primary mt-1" checked>
+              <div>
+                <label for="enableEvents" class="text-sm font-body font-medium text-textPrimary">
+                  Enable event scheduling
+                </label>
+                <p class="text-sm text-textSecondary">Group members can create and manage study sessions and meetings</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex items-center justify-end space-x-4 pt-6 border-t border-neutral/20">
+          <a href="/courses/{{ course._id }}?tab=groups" class="btn-secondary">
+            Cancel
+          </a>
+          <button type="submit" class="btn-primary flex items-center space-x-2">
+            <i class="fas fa-plus" aria-hidden="true"></i>
+            <span>Create Group</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Help Section -->
+    <div class="bg-primary/5 rounded-xl p-6 mt-8">
+      <h3 class="text-lg font-heading font-semibold text-textPrimary mb-3">
+        <i class="fas fa-info-circle text-primary mr-2" aria-hidden="true"></i>
+        Tips for Creating a Successful Study Group
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-textSecondary">
+        <div>
+          <h4 class="font-medium text-textPrimary mb-1">Clear Purpose</h4>
+          <p>Define specific goals and expectations for your group members</p>
+        </div>
+        <div>
+          <h4 class="font-medium text-textPrimary mb-1">Right Size</h4>
+          <p>Keep groups small enough for everyone to participate actively</p>
+        </div>
+        <div>
+          <h4 class="font-medium text-textPrimary mb-1">Regular Meetings</h4>
+          <p>Schedule consistent study sessions to maintain momentum</p>
+        </div>
+        <div>
+          <h4 class="font-medium text-textPrimary mb-1">Active Moderation</h4>
+          <p>Monitor discussions and keep the group focused on learning</p>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <form action="/groups" method="POST" class="mt-6 max-w-2xl space-y-5">
-    <input type="hidden" name="courseId" value="{{ course._id }}" />
-
-    <div>
-      <label for="name" class="label">Name</label>
-      <input type="text" id="name" name="name" value="{{ values.name }}" class="input" required minlength="2" maxlength="60" />
-      {% if errors.name %}<p class="mt-1 text-sm text-red-600">{{ errors.name }}</p>{% endif %}
-    </div>
-
-    <div>
-      <label for="description" class="label">Description (optional)</label>
-      <textarea id="description" name="description" rows="3" maxlength="500" class="input">{{ values.description }}</textarea>
-      {% if errors.description %}<p class="mt-1 text-sm text-red-600">{{ errors.description }}</p>{% endif %}
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div>
-        <label for="visibility" class="label">Visibility</label>
-        <select id="visibility" name="visibility" class="input">
-          <option value="public" {{ values.visibility == 'public' ? 'selected' : '' }}>Public</option>
-          <option value="private" {{ values.visibility == 'private' ? 'selected' : '' }}>Private</option>
-        </select>
-      </div>
-      <div>
-        <label for="maxMembers" class="label">Max members (2–100)</label>
-        <input type="number" id="maxMembers" name="maxMembers" min="2" max="100" value="{{ values.maxMembers or 25 }}" class="input" />
-        {% if errors.maxMembers %}<p class="mt-1 text-sm text-red-600">{{ errors.maxMembers }}</p>{% endif %}
-      </div>
-    </div>
-
-    <div class="pt-2">
-      <button type="submit" class="btn-primary">Create Group</button>
-    </div>
-  </form>
+</div>
 {% endblock %}

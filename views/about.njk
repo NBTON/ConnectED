@@ -1,10 +1,78 @@
 {% extends "layout.njk" %}
 {% block content %}
-<article class="prose max-w-none">
-  <h1>About connectED</h1>
-  <p>connectED serves as a collaborative platform, developing connections among students sharing the same class or course. The primary concept revolves around enabling students, regardless of their locations, to use the application to find study partners. Once connected, users can utilize the in-app messaging feature to coordinate study sessions, agreeing upon specific times and dates to study with one another. Moreover, the application allows for resource-sharing, allowing students to exchange files like PDFs and Word documents to enhance collaborative revision efforts.</p>
-</article>
-<div class="mt-8">
-  <img src="/Assets/About.PNG" alt="Students collaborating" class="rounded-lg shadow-md w-full h-auto" />
+<div class="container mx-auto px-4 py-12 max-w-6xl">
+  <!-- Hero Section -->
+  <section class="text-center mb-16">
+    <h1 class="text-4xl md:text-5xl font-bold text-textPrimary mb-6">About ConnectED</h1>
+    <p class="text-xl text-textSecondary max-w-3xl mx-auto leading-relaxed">ConnectED is a collaborative learning platform designed to connect students worldwide, fostering meaningful study partnerships and resource sharing for academic success.</p>
+  </section>
+
+  <!-- Mission Section -->
+  <section class="grid md:grid-cols-2 gap-12 mb-16 items-center">
+    <div>
+      <h2 class="text-3xl font-bold text-textPrimary mb-6">Our Mission</h2>
+      <p class="text-textSecondary leading-relaxed mb-6">ConnectED serves as a collaborative platform, developing connections among students sharing the same class or course. The primary concept revolves around enabling students, regardless of their locations, to use the application to find study partners.</p>
+      <p class="text-textSecondary leading-relaxed">Once connected, users can utilize the in-app messaging feature to coordinate study sessions, agreeing upon specific times and dates to study with one another. Moreover, the application allows for resource-sharing, allowing students to exchange files like PDFs and Word documents to enhance collaborative revision efforts.</p>
+      <div class="mt-8 flex space-x-4">
+        <a href="/courses" class="inline-flex items-center px-6 py-3 bg-primary text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+          <i class="fas fa-book mr-2"></i>
+          Browse Courses
+        </a>
+        <a href="/register" class="inline-flex items-center px-6 py-3 border border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-all duration-300">
+          <i class="fas fa-user-plus mr-2"></i>
+          Get Started
+        </a>
+      </div>
+    </div>
+    <div class="order-first md:order-last">
+      <img src="/Assets/About.PNG" alt="Students collaborating and sharing resources on ConnectED platform" class="rounded-xl shadow-xl w-full h-64 object-cover md:h-80" role="img" />
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="mb-16">
+    <h2 class="text-3xl font-bold text-textPrimary text-center mb-12">Key Features</h2>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="text-center p-6 bg-white rounded-xl shadow-md border border-neutral/20 hover:shadow-lg transition-all duration-300">
+        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-users text-2xl text-primary"></i>
+        </div>
+        <h3 class="text-xl font-bold text-textPrimary mb-3">Study Groups</h3>
+        <p class="text-textSecondary">Connect with students taking the same courses and form study groups regardless of location.</p>
+      </div>
+      
+      <div class="text-center p-6 bg-white rounded-xl shadow-md border border-neutral/20 hover:shadow-lg transition-all duration-300">
+        <div class="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-comments text-2xl text-secondary"></i>
+        </div>
+        <h3 class="text-xl font-bold text-textPrimary mb-3">Real-time Messaging</h3>
+        <p class="text-textSecondary">Coordinate study sessions through our built-in messaging system with real-time communication.</p>
+      </div>
+      
+      <div class="text-center p-6 bg-white rounded-xl shadow-md border border-neutral/20 hover:shadow-lg transition-all duration-300">
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-file-upload text-2xl text-blue-600"></i>
+        </div>
+        <h3 class="text-xl font-bold text-textPrimary mb-3">Resource Sharing</h3>
+        <p class="text-textSecondary">Share study materials, PDFs, and documents with your study group members seamlessly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="bg-primary text-white py-12 rounded-xl text-center">
+    <h2 class="text-3xl font-bold mb-4">Ready to Start Collaborating?</h2>
+    <p class="text-blue-100 mb-8 max-w-2xl mx-auto">Join thousands of students who are already using ConnectED to enhance their learning experience.</p>
+    <div class="space-x-4">
+      <a href="/register" class="inline-flex items-center px-8 py-4 bg-white text-primary font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+        <i class="fas fa-user-plus mr-2"></i>
+        Create Account
+      </a>
+      <a href="/courses" class="inline-flex items-center px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-primary transition-all duration-300">
+        <i class="fas fa-book mr-2"></i>
+        Browse Courses
+      </a>
+    </div>
+  </section>
 </div>
 {% endblock %}

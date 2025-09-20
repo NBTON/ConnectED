@@ -1,5 +1,6 @@
 const { User } = require("../models/db_schema")
 const bcrypt = require("bcrypt")
+const { generateToken } = require("../middleware/auth")
 
 const registerUser = async (req, res) => {
   try {
@@ -28,6 +29,8 @@ const registerUser = async (req, res) => {
     req.session.username = newUser.username
     req.session.userEmail = newUser.email
     req.session.flash = { type: 'success', message: 'Account created. Welcome!' }
+    const token = generateToken(newUser)
+    res.cookie('token', token, { httpOnly: true, secure: false, maxAge: 24 * 60 * 60 * 1000 })
     res.redirect('/courses')
   } catch (error) {
     let msg = 'Something went wrong.'
@@ -72,6 +75,8 @@ const loginUser = async (req, res) => {
     req.session.username = user.username
     req.session.userEmail = user.email
     req.session.flash = { type: 'success', message: 'Signed in successfully.' }
+    const token = generateToken(user)
+    res.cookie('token', token, { httpOnly: true, secure: false, maxAge: 24 * 60 * 60 * 1000 })
     const returnTo = req.session.returnTo || '/courses'
     req.session.returnTo = null
     res.redirect(returnTo)
@@ -85,6 +90,7 @@ const loginUser = async (req, res) => {
 const logoutUser = (req, res) => {
   req.session?.destroy(() => {
     res.clearCookie('connect.sid')
+    res.clearCookie('token')
     res.redirect('/login')
   })
 }

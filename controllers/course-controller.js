@@ -1,5 +1,6 @@
-const { Course } = require("../models/db_schema")
+const { Course, UserActivity, Analytics } = require("../models/db_schema")
 const multer = require("multer")
+const CourseMatcher = require("../utils/matching")
 
 const RECORDS_PER_PAGE = 6
 
@@ -69,6 +70,92 @@ const renderAbout = (req, res) => {
   res.render("about.njk")
 }
 
+// AI-Powered Course Matching
+const getCourseMatches = async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    const limit = parseInt(req.query.limit) || 10;
+    const recommendations = await CourseMatcher.getRecommendations(userId, limit);
+
+    // Track analytics
+    await Analytics.create({
+      userId,
+      action: "course_match_request",
+      resourceType: "course",
+      metadata: { limit, resultsCount: recommendations.length }
+    });
+
+    res.json({ recommendations });
+  } catch (error) {
+    console.error("Course matching error:", error);
+    res.status(500).json({ error: "Failed to get course recommendations" });
+  }
+}
+
+const getUserMatches = async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    const limit = parseInt(req.query.limit) || 10;
+    const recommendations = await CourseMatcher.getUserRecommendations(userId, limit);
+
+    // Track analytics
+    await Analytics.create({
+      userId,
+      action: "user_match_request",
+      resourceType: "user",
+      metadata: { limit, resultsCount: recommendations.length }
+    });
+
+    res.json({ recommendations });
+  } catch (error) {
+    console.error("User matching error:", error);
+    res.status(500).json({ error: "Failed to get user recommendations" });
+  }
+}
+
+// Track user activity for better recommendations
+const trackCourseActivity = async (req, res, next) => {
+  try {
+    const userId = req.session?.userId;
+    const courseId = req.params.id || req.body.courseId;
+
+    if (userId && courseId) {
+      const action = req.method === 'GET' ? 'view_course' : 'interact_course';
+
+      await UserActivity.findOneAndUpdate(
+        { userId, resourceType: 'course', resourceId: courseId },
+        {
+          userId,
+          action,
+          resourceType: 'course',
+          resourceId: courseId,
+          weight: action === 'view_course' ? 1 : 2
+        },
+        { upsert: true, new: true }
+      );
+
+      // Track analytics
+      await Analytics.create({
+        userId,
+        action,
+        resourceType: 'course',
+        resourceId: courseId
+      });
+    }
+  } catch (error) {
+    console.error("Activity tracking error:", error);
+  }
+  next();
+}
+
 module.exports = {
   renderCourseListing,
   renderAddCourse,
@@ -76,4 +163,7 @@ module.exports = {
   renderAbout,
   addCoursePostAction,
   multerStorage,
+  getCourseMatches,
+  getUserMatches,
+  trackCourseActivity,
 }

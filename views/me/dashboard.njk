@@ -1,0 +1,280 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+<div class="min-h-screen bg-background">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header Section -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-heading font-bold text-textPrimary mb-2">
+        Welcome back, {% if currentUser.firstName %}{{ currentUser.firstName }}{% else %}{{ currentUser.username }}{% endif %}!
+      </h1>
+      <p class="text-textSecondary font-body">Here's your learning progress and recent activity</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Main Content Column -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Progress Overview Card -->
+        <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-heading font-semibold text-textPrimary">Learning Progress</h2>
+            <span class="text-sm font-body text-textSecondary">Overall Completion: 75%</span>
+          </div>
+          
+          <div class="space-y-4">
+            <!-- Progress Bars -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-body font-medium text-textPrimary">Computer Science Fundamentals</span>
+                <span class="text-sm font-body text-textSecondary">85%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-body font-medium text-textPrimary">Mathematics for Engineers</span>
+                <span class="text-sm font-body text-textSecondary">60%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-secondary h-2 rounded-full" style="width: 60%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-body font-medium text-textPrimary">Web Development Basics</span>
+                <span class="text-sm font-body text-textSecondary">45%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-coral-500 h-2 rounded-full" style="width: 45%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enrolled Courses Section -->
+        <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-heading font-semibold text-textPrimary">Your Courses</h2>
+            <a href="/courses" class="text-primary hover:text-indigo-600 text-sm font-body font-medium">View All</a>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Course Card 1 -->
+            <div class="bg-background rounded-lg p-4 border border-neutral/20 hover:border-primary/30 transition-colors">
+              <div class="flex items-start justify-between mb-3">
+                <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-laptop-code text-primary text-lg"></i>
+                </div>
+                <span class="bg-primary/10 text-primary text-xs font-body font-medium px-2 py-1 rounded-full">85% Complete</span>
+              </div>
+              <h3 class="font-heading font-semibold text-textPrimary text-sm mb-2">Computer Science Fundamentals</h3>
+              <p class="text-textSecondary text-xs font-body mb-3">Learn core programming concepts and algorithms</p>
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-textSecondary font-body">12 lessons remaining</span>
+                <a href="/courses/detail" class="text-primary hover:text-indigo-600 text-xs font-body font-medium">Continue</a>
+              </div>
+            </div>
+
+            <!-- Course Card 2 -->
+            <div class="bg-background rounded-lg p-4 border border-neutral/20 hover:border-secondary/30 transition-colors">
+              <div class="flex items-start justify-between mb-3">
+                <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-calculator text-secondary text-lg"></i>
+                </div>
+                <span class="bg-secondary/10 text-secondary text-xs font-body font-medium px-2 py-1 rounded-full">60% Complete</span>
+              </div>
+              <h3 class="font-heading font-semibold text-textPrimary text-sm mb-2">Mathematics for Engineers</h3>
+              <p class="text-textSecondary text-xs font-body mb-3">Advanced calculus and linear algebra</p>
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-textSecondary font-body">8 lessons remaining</span>
+                <a href="/courses/detail" class="text-secondary hover:text-teal-600 text-xs font-body font-medium">Continue</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity Section -->
+        <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6">
+          <h2 class="text-xl font-heading font-semibold text-textPrimary mb-6">Recent Activity</h2>
+          
+          <div class="space-y-4">
+            <!-- Activity Item 1 -->
+            <div class="flex items-start space-x-3">
+              <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-check text-primary"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-body text-textPrimary">
+                  Completed <span class="font-medium">"Introduction to Algorithms"</span> lesson
+                </p>
+                <p class="text-xs text-textSecondary font-body">2 hours ago</p>
+              </div>
+            </div>
+
+            <!-- Activity Item 2 -->
+            <div class="flex items-start space-x-3">
+              <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-comment text-secondary"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-body text-textPrimary">
+                  Posted a question in <span class="font-medium">Mathematics Study Group</span>
+                </p>
+                <p class="text-xs text-textSecondary font-body">5 hours ago</p>
+              </div>
+            </div>
+
+            <!-- Activity Item 3 -->
+            <div class="flex items-start space-x-3">
+              <div class="w-10 h-10 bg-coral-500/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-trophy text-coral-500"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-body text-textPrimary">
+                  Earned <span class="font-medium">"Quick Learner"</span> achievement
+                </p>
+                <p class="text-xs text-textSecondary font-body">Yesterday</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Column -->
+      <div class="space-y-6">
+        <!-- Quick Access Card -->
+        <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6">
+          <h2 class="text-lg font-heading font-semibold text-textPrimary mb-4">Quick Access</h2>
+          
+          <div class="space-y-3">
+            <a href="/me/profile" class="flex items-center space-x-3 p-3 bg-background rounded-lg hover:bg-primary/5 transition-colors group">
+              <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-user text-primary group-hover:text-indigo-600"></i>
+              </div>
+              <span class="text-sm font-body text-textPrimary group-hover:text-primary">My Profile</span>
+            </a>
+            
+            <a href="/groups/create" class="flex items-center space-x-3 p-3 bg-background rounded-lg hover:bg-secondary/5 transition-colors group">
+              <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-users text-secondary group-hover:text-teal-600"></i>
+              </div>
+              <span class="text-sm font-body text-textPrimary group-hover:text-secondary">Create Group</span>
+            </a>
+            
+            <a href="/resources" class="flex items-center space-x-3 p-3 bg-background rounded-lg hover:bg-coral-500/5 transition-colors group">
+              <div class="w-10 h-10 bg-coral-500/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-book-open text-coral-500 group-hover:text-coral-600"></i>
+              </div>
+              <span class="text-sm font-body text-textPrimary group-hover:text-coral-500">Resource Center</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick Stats Card -->
+        <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6">
+          <h2 class="text-lg font-heading font-semibold text-textPrimary mb-4">Quick Stats</h2>
+          
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-body text-textSecondary">Courses Enrolled</span>
+              <span class="font-heading font-semibold text-textPrimary">3</span>
+            </div>
+            
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-body text-textSecondary">Study Groups</span>
+              <span class="font-heading font-semibold text-textPrimary">2</span>
+            </div>
+            
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-body text-textSecondary">Hours Learned</span>
+              <span class="font-heading font-semibold text-textPrimary">42</span>
+            </div>
+            
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-body text-textSecondary">Achievements</span>
+              <span class="font-heading font-semibold text-textPrimary">5</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommended Courses Card -->
+        <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6">
+          <h2 class="text-lg font-heading font-semibold text-textPrimary mb-4">Recommended for You</h2>
+          
+          <div class="space-y-3">
+            <!-- Recommendation 1 -->
+            <div class="flex items-center space-x-3 p-3 bg-background rounded-lg hover:bg-primary/5 transition-colors">
+              <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-database text-primary"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-sm font-heading font-semibold text-textPrimary truncate">Data Structures</h3>
+                <p class="text-xs text-textSecondary font-body truncate">Based on your progress</p>
+              </div>
+            </div>
+
+            <!-- Recommendation 2 -->
+            <div class="flex items-center space-x-3 p-3 bg-background rounded-lg hover:bg-secondary/5 transition-colors">
+              <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-network-wired text-secondary"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-sm font-heading font-semibold text-textPrimary truncate">Networking Basics</h3>
+                <p class="text-xs text-textSecondary font-body truncate">Popular with peers</p>
+              </div>
+            </div>
+
+            <!-- Recommendation 3 -->
+            <div class="flex items-center space-x-3 p-3 bg-background rounded-lg hover:bg-coral-500/5 transition-colors">
+              <div class="w-12 h-12 bg-coral-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-mobile-alt text-coral-500"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-sm font-heading font-semibold text-textPrimary truncate">Mobile Development</h3>
+                <p class="text-xs text-textSecondary font-body truncate">Trending course</p>
+              </div>
+            </div>
+          </div>
+          
+          <a href="/courses" class="block mt-4 text-center text-primary hover:text-indigo-600 text-sm font-body font-medium">
+            Browse More Courses
+          </a>
+        </div>
+
+        <!-- Upcoming Events Card -->
+        <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6">
+          <h2 class="text-lg font-heading font-semibold text-textPrimary mb-4">Upcoming Events</h2>
+          
+          <div class="space-y-3">
+            <!-- Event 1 -->
+            <div class="p-3 bg-background rounded-lg border-l-4 border-primary">
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="text-sm font-heading font-semibold text-textPrimary">Study Session</h3>
+                <span class="text-xs text-textSecondary font-body">Tomorrow</span>
+              </div>
+              <p class="text-xs text-textSecondary font-body">Mathematics Group • 3:00 PM</p>
+            </div>
+
+            <!-- Event 2 -->
+            <div class="p-3 bg-background rounded-lg border-l-4 border-secondary">
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="text-sm font-heading font-semibold text-textPrimary">Live Q&A</h3>
+                <span class="text-xs text-textSecondary font-body">Sep 10</span>
+              </div>
+              <p class="text-xs text-textSecondary font-body">CS Fundamentals • 2:00 PM</p>
+            </div>
+          </div>
+          
+          <a href="/me/groups" class="block mt-4 text-center text-primary hover:text-indigo-600 text-sm font-body font-medium">
+            View All Events
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

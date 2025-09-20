@@ -1,29 +1,342 @@
 {% extends "layout.njk" %}
 {% block content %}
-<section class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-  <div>
-    <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight">
-      <span class="text-primary">Study Better,</span>
-      <span class="block text-gray-800">Study connectED</span>
-    </h1>
-    <p class="mt-6 text-lg text-gray-600">connectED is the go-to platform for students seeking collaborative learning experiences.</p>
-    <div class="mt-8 flex gap-3">
-      <a href="/register" class="btn-primary">Get started</a>
-      <a href="/about" class="btn-secondary">Learn more</a>
+<!-- Hero Section -->
+<section class="relative bg-gradient-to-r from-indigo-500 to-teal-500 text-white overflow-hidden py-20 lg:py-24" aria-label="ConnectEd Hero Section">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col lg:flex-row items-center justify-between text-center lg:text-left">
+      <div class="lg:w-1/2 mb-12 lg:mb-0">
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold mb-6 leading-tight" style="font-family: 'Inter', sans-serif;">
+          Learn Together, Grow Together
+        </h1>
+        <p class="text-xl text-white/90 mb-8 max-w-lg mx-auto lg:mx-0" style="font-family: 'Open Sans', sans-serif;">
+          ConnectEd brings students and educators together in a collaborative learning environment. Join thousands of learners achieving their academic goals.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+          <a href="/register" class="inline-flex items-center px-8 py-4 bg-white text-indigo-600 font-heading font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 focus:outline-none" aria-label="Get started with ConnectEd for free">
+            <i class="fas fa-rocket mr-3"></i>
+            Get Started Free
+          </a>
+          <a href="/courses" class="inline-flex items-center px-8 py-4 border-2 border-white text-white font-heading font-semibold rounded-lg hover:bg-white hover:text-indigo-600 transition-all duration-300 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 focus:outline-none" aria-label="Browse available courses">
+            <i class="fas fa-book-open mr-3"></i>
+            Browse Courses
+          </a>
+        </div>
+      </div>
+      <div class="lg:w-1/2 flex justify-center lg:justify-end">
+        <div class="relative">
+          <img src="/Assets/Courses.jpeg" alt="Students collaborating on courses through ConnectEd platform" class="w-80 h-80 lg:w-96 lg:h-96 object-cover rounded-2xl shadow-2xl border-4 border-white/20" role="img" />
+        </div>
+      </div>
     </div>
   </div>
-  <div class="relative">
-    <img src="/Assets/Courses.jpeg" alt="Courses offered by connectED" class="rounded-lg shadow-md w-full h-auto object-cover" />
+</section>
+
+<!-- Value Proposition Section -->
+<section class="py-20 bg-background" aria-label="ConnectEd Value Propositions">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-heading font-bold text-textPrimary mb-4" style="font-family: 'Inter', sans-serif;">
+        Why Choose ConnectEd?
+      </h2>
+      <p class="text-xl text-textSecondary max-w-2xl mx-auto" style="font-family: 'Open Sans', sans-serif;">
+        Our platform is designed to enhance your learning experience through collaboration and innovation
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+      <!-- Collaborative Learning -->
+      <div class="bg-white rounded-xl shadow-md p-8 text-center border border-gray-100 hover:shadow-lg transition-all duration-300">
+        <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="fas fa-users text-3xl text-indigo-600" aria-hidden="true"></i>
+        </div>
+        <h3 class="text-2xl font-heading font-semibold text-textPrimary mb-4" style="font-family: 'Inter', sans-serif;">
+          Collaborative Learning
+        </h3>
+        <p class="text-textSecondary mb-6" style="font-family: 'Open Sans', sans-serif;">
+          Join study groups, share resources, and learn from peers in real-time collaborative sessions.
+        </p>
+        <div class="text-indigo-600 font-semibold">
+          <i class="fas fa-user-plus mr-2" aria-hidden="true"></i>
+          10,000+ Active Students
+        </div>
+      </div>
+
+      <!-- Expert Instructors -->
+      <div class="bg-white rounded-xl shadow-md p-8 text-center border border-gray-100 hover:shadow-lg transition-all duration-300">
+        <div class="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="fas fa-graduation-cap text-3xl text-teal-600" aria-hidden="true"></i>
+        </div>
+        <h3 class="text-2xl font-heading font-semibold text-textPrimary mb-4" style="font-family: 'Inter', sans-serif;">
+          Expert Instructors
+        </h3>
+        <p class="text-textSecondary mb-6" style="font-family: 'Open Sans', sans-serif;">
+          Learn from qualified educators and industry professionals with years of teaching experience.
+        </p>
+        <div class="text-teal-600 font-semibold">
+          <i class="fas fa-star mr-2" aria-hidden="true"></i>
+          4.8/5 Instructor Rating
+        </div>
+      </div>
+
+      <!-- Progress Tracking -->
+      <div class="bg-white rounded-xl shadow-md p-8 text-center border border-gray-100 hover:shadow-lg transition-all duration-300">
+        <div class="w-20 h-20 bg-coral-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="fas fa-chart-line text-3xl text-coral-600" aria-hidden="true"></i>
+        </div>
+        <h3 class="text-2xl font-heading font-semibold text-textPrimary mb-4" style="font-family: 'Inter', sans-serif;">
+          Progress Tracking
+        </h3>
+        <p class="text-textSecondary mb-6" style="font-family: 'Open Sans', sans-serif;">
+          Monitor your learning journey with detailed analytics and achievement milestones.
+        </p>
+        <div class="text-coral-600 font-semibold">
+          <i class="fas fa-trophy mr-2" aria-hidden="true"></i>
+          95% Completion Rate
+        </div>
+      </div>
+    </div>
   </div>
 </section>
-<section class="mt-16">
-  <div class="text-center text-sm text-gray-500">Trusted by Saudi’s Universities</div>
-  <div class="mt-4 grid grid-cols-2 sm:grid-cols-5 gap-4 items-center opacity-80">
-    <img class="h-10 mx-auto" src="/Assets/Logo1.PNG" alt="University Logo 1" />
-    <img class="h-10 mx-auto" src="/Assets/Logo2.PNG" alt="University Logo 2" />
-    <img class="h-10 mx-auto" src="/Assets/Logo3.PNG" alt="University Logo 3" />
-    <img class="h-10 mx-auto" src="/Assets/Logo4.PNG" alt="University Logo 4" />
-    <img class="h-10 mx-auto" src="/Assets/Logo5.PNG" alt="University Logo 5" />
+
+<!-- Featured Courses Section -->
+<section class="py-20 bg-white" aria-label="Featured Courses">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-heading font-bold text-textPrimary mb-4" style="font-family: 'Inter', sans-serif;">
+        Popular Courses
+      </h2>
+      <p class="text-xl text-textSecondary max-w-2xl mx-auto" style="font-family: 'Open Sans', sans-serif;">
+        Join thousands of students already enrolled in our most popular courses
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+      <!-- Course 1: Mathematics -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-all duration-300">
+        <div class="relative">
+          <img src="/Assets/course-math.jpg" alt="Mathematics course cover" class="w-full h-48 object-cover" />
+          <div class="absolute top-4 right-4 bg-coral-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+            Bestseller
+          </div>
+        </div>
+        <div class="p-6">
+          <h3 class="text-xl font-heading font-semibold text-textPrimary mb-2" style="font-family: 'Inter', sans-serif;">
+            Advanced Mathematics
+          </h3>
+          <p class="text-textSecondary mb-4" style="font-family: 'Open Sans', sans-serif;">
+            Master calculus, algebra, and advanced mathematical concepts with expert guidance.
+          </p>
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center">
+              <div class="flex text-amber-400">
+                <i class="fas fa-star" aria-hidden="true"></i>
+                <i class="fas fa-star" aria-hidden="true"></i>
+                <i class="fas fa-star" aria-hidden="true"></i>
+                <i class="fas fa-star" aria-hidden="true"></i>
+                <i class="fas fa-star-half-alt" aria-hidden="true"></i>
+              </div>
+              <span class="ml-2 text-sm text-textSecondary">4.8/5</span>
+            </div>
+            <div class="text-sm text-textSecondary">
+              <i class="fas fa-users mr-1" aria-hidden="true"></i>
+              2,450 enrolled
+            </div>
+          </div>
+          <a href="/courses/detail" class="w-full bg-indigo-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-indigo-600 transition-colors focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none block text-center" aria-label="Enroll in Advanced Mathematics course">
+            Enroll Now
+          </a>
+        </div>
+      </div>
+
+      <!-- Course 2: Computer Science -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-all duration-300">
+        <div class="relative">
+          <img src="/Assets/subject-img.jpg" alt="Computer Science course cover" class="w-full h-48 object-cover" />
+          <div class="absolute top-4 right-4 bg-teal-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+            Trending
+          </div>
+        </div>
+        <div class="p-6">
+          <h3 class="text-xl font-heading font-semibold text-textPrimary mb-2" style="font-family: 'Inter', sans-serif;">
+            Computer Science Fundamentals
+          </h3>
+          <p class="text-textSecondary mb-4" style="font-family: 'Open Sans', sans-serif;">
+            Learn programming, algorithms, and data structures from industry experts.
+          </p>
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center">
+              <div class="flex text-amber-400">
+                <i class="fas fa-star" aria-hidden="true"></i>
+                <i class="fas fa-star" aria-hidden="true"></i>
+                <i class="fas fa-star" aria-hidden="true"></i>
+                <i class="fas fa-star" aria-hidden="true"></i>
+                <i class="fas fa-star" aria-hidden="true"></i>
+              </div>
+              <span class="ml-2 text-sm text-textSecondary">4.9/5</span>
+            </div>
+            <div class="text-sm text-textSecondary">
+              <i class="fas fa-users mr-1" aria-hidden="true"></i>
+              3,120 enrolled
+            </div>
+          </div>
+          <a href="/courses/detail" class="w-full bg-indigo-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-indigo-600 transition-colors focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none block text-center" aria-label="Enroll in Computer Science Fundamentals course">
+            Enroll Now
+          </a>
+        </div>
+      </div>
+
+      <!-- Course 3: Language Learning -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-all duration-300">
+        <div class="relative">
+          <img src="/Assets/About.PNG" alt="Language Learning course cover" class="w-full h-48 object-cover" />
+          <div class="absolute top-4 right-4 bg-indigo-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+            New
+          </div>
+        </div>
+        <div class="p-6">
+          <h3 class="text-xl font-heading font-semibold text-textPrimary mb-2" style="font-family: 'Inter', sans-serif;">
+            English Language Mastery
+          </h3>
+          <p class="text-textSecondary mb-4" style="font-family: 'Open Sans', sans-serif;">
+            Improve your English skills with comprehensive lessons and practice exercises.
+          </p>
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center">
+              <div class="flex text-amber-400">
+                <i class="fas fa-star" aria-hidden="true"></i>
+                <i class="fas fa-star" aria-hidden="true"></i>
+                <i class="fas fa-star" aria-hidden="true"></i>
+                <i class="fas fa-star" aria-hidden="true"></i>
+                <i class="fas fa-star" aria-hidden="true"></i>
+              </div>
+              <span class="ml-2 text-sm text-textSecondary">5.0/5</span>
+            </div>
+            <div class="text-sm text-textSecondary">
+              <i class="fas fa-users mr-1" aria-hidden="true"></i>
+              1,890 enrolled
+            </div>
+          </div>
+          <a href="/courses/detail" class="w-full bg-indigo-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-indigo-600 transition-colors focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none block text-center" aria-label="Enroll in English Language Mastery course">
+            Enroll Now
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center">
+      <a href="/courses" class="inline-flex items-center px-8 py-4 border-2 border-indigo-500 text-indigo-500 font-heading font-semibold rounded-lg hover:bg-indigo-500 hover:text-white transition-all duration-300 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none" aria-label="View all available courses">
+        <i class="fas fa-book-open mr-3" aria-hidden="true"></i>
+        View All Courses
+      </a>
+    </div>
   </div>
 </section>
+
+<!-- Testimonials Section -->
+<section class="py-20 bg-background" aria-label="Student Testimonials">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-heading font-bold text-textPrimary mb-4" style="font-family: 'Inter', sans-serif;">
+        What Our Students Say
+      </h2>
+      <p class="text-xl text-textSecondary max-w-2xl mx-auto" style="font-family: 'Open Sans', sans-serif;">
+        Join thousands of satisfied students who have transformed their learning experience
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Testimonial 1 -->
+      <div class="bg-white rounded-xl shadow-md p-8 border border-gray-100">
+        <div class="flex items-center mb-6">
+          <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
+            <i class="fas fa-user-graduate text-2xl text-indigo-600" aria-hidden="true"></i>
+          </div>
+          <div>
+            <h4 class="font-heading font-semibold text-textPrimary" style="font-family: 'Inter', sans-serif;">Ahmed Al-Saud</h4>
+            <p class="text-textSecondary text-sm" style="font-family: 'Open Sans', sans-serif;">Computer Science Student</p>
+          </div>
+        </div>
+        <div class="flex text-amber-400 mb-4">
+          <i class="fas fa-star" aria-hidden="true"></i>
+          <i class="fas fa-star" aria-hidden="true"></i>
+          <i class="fas fa-star" aria-hidden="true"></i>
+          <i class="fas fa-star" aria-hidden="true"></i>
+          <i class="fas fa-star" aria-hidden="true"></i>
+        </div>
+        <p class="text-textSecondary italic" style="font-family: 'Open Sans', sans-serif;">
+          "ConnectEd transformed how I study. The collaborative features helped me ace my exams and make lasting connections with classmates."
+        </p>
+      </div>
+
+      <!-- Testimonial 2 -->
+      <div class="bg-white rounded-xl shadow-md p-8 border border-gray-100">
+        <div class="flex items-center mb-6">
+          <div class="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mr-4">
+            <i class="fas fa-user-graduate text-2xl text-teal-600" aria-hidden="true"></i>
+          </div>
+          <div>
+            <h4 class="font-heading font-semibold text-textPrimary" style="font-family: 'Inter', sans-serif;">Sarah Mohammed</h4>
+            <p class="text-textSecondary text-sm" style="font-family: 'Open Sans', sans-serif;">Mathematics Major</p>
+          </div>
+        </div>
+        <div class="flex text-amber-400 mb-4">
+          <i class="fas fa-star" aria-hidden="true"></i>
+          <i class="fas fa-star" aria-hidden="true"></i>
+          <i class="fas fa-star" aria-hidden="true"></i>
+          <i class="fas fa-star" aria-hidden="true"></i>
+          <i class="fas fa-star" aria-hidden="true"></i>
+        </div>
+        <p class="text-textSecondary italic" style="font-family: 'Open Sans', sans-serif;">
+          "The study groups feature saved my semester! Being able to work through problems with peers made all the difference."
+        </p>
+      </div>
+
+      <!-- Testimonial 3 -->
+      <div class="bg-white rounded-xl shadow-md p-8 border border-gray-100">
+        <div class="flex items-center mb-6">
+          <div class="w-16 h-16 bg-coral-100 rounded-full flex items-center justify-center mr-4">
+            <i class="fas fa-user-graduate text-2xl text-coral-600" aria-hidden="true"></i>
+          </div>
+          <div>
+            <h4 class="font-heading font-semibold text-textPrimary" style="font-family: 'Inter', sans-serif;">Mohammed Hassan</h4>
+            <p class="text-textSecondary text-sm" style="font-family: 'Open Sans', sans-serif;">Engineering Student</p>
+          </div>
+        </div>
+        <div class="flex text-amber-400 mb-4">
+          <i class="fas fa-star" aria-hidden="true"></i>
+          <i class="fas fa-star" aria-hidden="true"></i>
+          <i class="fas fa-star" aria-hidden="true"></i>
+          <i class="fas fa-star" aria-hidden="true"></i>
+          <i class="fas fa-star-half-alt" aria-hidden="true"></i>
+        </div>
+        <p class="text-textSecondary italic" style="font-family: 'Open Sans', sans-serif;">
+          "The progress tracking and analytics helped me identify my weak areas and focus my study efforts effectively."
+        </p>
+      </div>
+    </div>
+
+    <div class="text-center mt-12">
+      <div class="bg-white rounded-xl shadow-md p-8 border border-gray-100 max-w-2xl mx-auto">
+        <h3 class="text-2xl font-heading font-semibold text-textPrimary mb-4" style="font-family: 'Inter', sans-serif;">
+          Join 10,000+ Students Today
+        </h3>
+        <p class="text-textSecondary mb-6" style="font-family: 'Open Sans', sans-serif;">
+          Experience the difference that collaborative learning can make in your academic journey
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/register" class="inline-flex items-center px-8 py-4 bg-indigo-500 text-white font-heading font-semibold rounded-lg hover:bg-indigo-600 transition-colors focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none" aria-label="Get started with ConnectEd">
+            <i class="fas fa-rocket mr-3" aria-hidden="true"></i>
+            Get Started Free
+          </a>
+          <a href="/about" class="inline-flex items-center px-8 py-4 border-2 border-indigo-500 text-indigo-500 font-heading font-semibold rounded-lg hover:bg-indigo-500 hover:text-white transition-colors focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none" aria-label="Learn more about ConnectEd">
+            <i class="fas fa-info-circle mr-3" aria-hidden="true"></i>
+            Learn More
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Note: Download hero background from Unsplash: https://unsplash.com/photos/group-of-people-sitting-near-table-VzwwUg5odC0 and save as public/Assets/hero-bg.jpg -->
 {% endblock %}

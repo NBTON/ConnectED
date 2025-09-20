@@ -1,0 +1,51 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    - duration: 30
+      arrivalRate: 5
+      name: "Warm up - 5 users for 30 seconds"
+    - duration: 60
+      arrivalRate: 20
+      name: "Moderate load - 20 users for 1 minute"
+    - duration: 120
+      arrivalRate: 50
+      name: "High load - 50 users for 2 minutes"
+  engines:
+    http:
+      timeout: 30s
+
+scenarios:
+  - name: "Main Page Load"
+    weight: 100
+    flow:
+    - get:
+        url: "/"
+    - think: 1000
+
+  - name: "About Page Load"
+    weight: 50
+    flow:
+    - get:
+        url: "/about"
+    - think: 800
+
+  - name: "User Registration"
+    weight: 30
+    flow:
+    - post:
+        url: "/register"
+        json:
+          username: "testuser{{ $randomNumber(1000,9999) }}"
+          email: "test{{ $randomNumber(1000,9999) }}@example.com"
+          password: "TestPass123!"
+    - think: 1500
+
+  - name: "User Login"
+    weight: 20
+    flow:
+    - post:
+        url: "/login"
+        json:
+          email: "test{{ $randomNumber(1000,9999) }}@example.com"
+          password: "TestPass123!"
+    - think: 1200

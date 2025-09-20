@@ -117,3 +117,100 @@ When a group is created, an owner membership is created automatically.
 ## Notes
 - Default maxMembers: 25. Maximum allowed: 100.
 - Sessions use `req.session.userId`; after login, redirects to any saved `returnTo` (e.g., invite links).
+
+
+---
+
+# Deployment
+
+## Production Deployment Pipeline
+
+This project uses **GitHub Actions** for CI/CD and **Heroku** as the deployment platform for simplicity, automatic scaling, and easy integration with MongoDB and Redis add-ons.
+
+### Prerequisites
+
+1. **Heroku Account**: Sign up at [heroku.com](https://heroku.com) and install the Heroku CLI.
+2. **GitHub Repository**: Ensure this project is in a GitHub repository.
+3. **Heroku App**: Create a new Heroku app via CLI or dashboard:
+   ```
+   heroku create your-app-name
+   ```
+4. **Add-ons**:
+   - **MongoDB**: Use MongoDB Atlas (free tier) or Heroku's mLab add-on. Get the connection URI.
+   - **Redis**: Add Heroku Redis: `heroku addons:create heroku-redis:hobby-dev`.
+5. **Environment Variables**: Set via Heroku CLI or dashboard (never commit them):
+   ```
+   heroku config:set MONGODB_URI="your-mongodb-uri"
+   heroku config:set SESSION_SECRET="your-random-secret"
+   heroku config:set JWT_SECRET="your-jwt-secret"
+   heroku config:set REDIS_URL="your-redis-url-from-addon"
+   heroku config:set ENCRYPTION_KEY="your-32-char-key"
+   heroku config:set NODE_ENV="production"
+   heroku config:set PORT=3000  # Optional, Heroku sets $PORT
+   ```
+   See `.env.example` for all required variables.
+
+### GitHub Secrets Setup
+
+In your GitHub repo settings > Secrets and variables > Actions, add:
+- `HEROKU_API_KEY`: Your Heroku API key (from `heroku auth:token`).
+- `HEROKU_APP_NAME`: Your Heroku app name (e.g., "your-app-name").
+- `HEROKU_EMAIL`: Your Heroku account email.
+
+Update `.github/workflows/ci-cd.yml` to replace `"your-app-name"` and `"your-email@example.com"` with your actual values.
+
+### CI/CD Workflow
+
+The workflow in `.github/workflows/ci-cd.yml` runs on push to `main`:
+
+1. **Test Job** (runs on push/PR):
+   - Installs dependencies (`npm ci`).
+   - Runs linting (`npm run lint` with ESLint).
+   - Runs Jest tests (`npm test`) and checks coverage >40%.
+   - Builds assets (`npm run build` for Tailwind minification).
+
+2. **Deploy Job** (only on push to main, after tests pass):
+   - Builds and deploys to Heroku using the `akhileshns/heroku-deploy` action.
+   - Runs a health check (`curl /health`) post-deployment.
+
+### Deployment Steps
+
+1. **Local Testing**:
+   ```
+   npm run lint
+   npm test
+   npm run build
+   ```
+
+2. **Push to GitHub**:
+   ```
+   git add .
+   git commit -m "Ready for deployment"
+   git push origin main
+   ```
+
+3. **Monitor Workflow**: Go to GitHub repo > Actions tab to watch the CI/CD run. It will deploy automatically on success.
+
+4. **Verify Deployment**:
+   ```
+   heroku open
+   curl https://your-app-name.herokuapp.com/health
+   ```
+
+### Security & Best Practices
+
+- **Environment Variables**: Managed securely via Heroku config vars. Use strong, unique secrets.
+- **Redis Fallback**: Production uses Heroku Redis; falls back to memory store if unavailable.
+- **Rate Limiting & Helmet**: Enabled by default for security.
+- **SSL**: Heroku provides automatic HTTPS.
+- **Monitoring**: Add Heroku logs: `heroku logs --tail`.
+- **Scaling**: Use `heroku ps:scale web=1` for dynos.
+
+### Troubleshooting
+
+- **Tests Fail**: Fix code issues, ensure 53+ passing tests and >40% coverage.
+- **Deployment Fails**: Check GitHub Actions logs, Heroku logs, or secrets configuration.
+- **Redis/Mongo Connection**: Verify add-on URLs in config vars.
+- **Custom Domain**: Use `heroku domains:add yourdomain.com` and DNS setup.
+
+For advanced setups (AWS, custom CI), modify the workflow YAML accordingly.

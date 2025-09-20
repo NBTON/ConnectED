@@ -1,56 +1,491 @@
 {% extends "layout.njk" %}
 {% block content %}
-<div class="flex items-center justify-between">
-  <h1 class="text-2xl font-semibold">Courses</h1>
-  <a href="/courses/add" class="btn-primary">Add Course</a>
-</div>
-
-<form id="search-form" action="/courses" method="GET" class="mt-6">
-  <label for="search" class="label">Search Courses</label>
-  <div class="mt-1 flex">
-    <input type="search" id="search" name="search" value="{{ text }}" placeholder="Search courses..." class="input flex-1" />
-    <button type="submit" class="ml-2 btn-secondary">Search</button>
+<div class="bg-background min-h-screen">
+  <!-- Header with Breadcrumbs -->
+  <div class="bg-white border-b border-neutral/20">
+    <div class="container mx-auto px-4 lg:px-8 py-4">
+      <nav class="text-sm text-textSecondary" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2">
+          <li>
+            <a href="/" class="hover:text-primary transition-colors">Home</a>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-chevron-right text-xs mx-2"></i>
+            <span class="text-textPrimary font-medium">Courses</span>
+          </li>
+        </ol>
+      </nav>
+    </div>
   </div>
-</form>
 
-{% if courses and courses | length > 0 %}
-  <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    {% for course in courses %}
-      <article class="card">
-        <img src="/uploads/courses/{{ course.image }}" alt="Course image for {{ course.title }}" class="w-full h-44 object-cover" onerror="this.onerror=null;this.src='/Assets/subject-img.jpg';" />
-        <div class="p-4">
-          <h2 class="text-lg font-semibold truncate" title="{{ course.title }}">{{ course.title }}</h2>
-          <p class="mt-1 text-sm text-gray-600 truncate" title="{{ course.linktoTheCall }}">
-            <a href="{{ course.linktoTheCall }}" target="_blank" rel="noopener" class="text-primary hover:underline">{{ course.linktoTheCall }}</a>
-          </p>
-          <div class="mt-4">
-            <a href="/courses/{{ course._id }}" class="btn-secondary">View Course</a>
+  <div class="container mx-auto px-4 lg:px-8 py-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl lg:text-4xl font-heading font-bold text-textPrimary mb-2">All Courses</h1>
+      <p class="text-textSecondary text-lg">Discover and join study groups for your courses</p>
+    </div>
+
+    <!-- Search and Filters Bar -->
+    <div class="flex flex-col lg:flex-row gap-4 mb-8">
+      <!-- Search Bar -->
+      <div class="flex-1">
+        <form id="search-form" action="/courses" method="GET" class="relative" role="search" aria-label="Search courses">
+          <div class="relative">
+            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-textSecondary"></i>
+            <input class="w-full pl-12 pr-4 py-3 border border-neutral/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-body" 
+                   type="search" id="search" name="search" value="{{ text }}" 
+                   placeholder="Search courses, subjects, or instructors..." aria-label="Search courses">
+          </div>
+        </form>
+      </div>
+
+      <!-- Sort Dropdown -->
+      <div class="relative">
+        <button class="flex items-center px-4 py-3 border border-neutral/30 text-textPrimary rounded-lg hover:border-indigo-500 transition-colors bg-white font-body" 
+                onclick="toggleSortDropdown()" aria-expanded="false" aria-haspopup="true">
+          <i class="fas fa-sort mr-2 text-textSecondary"></i>
+          Sort by
+          <i class="fas fa-chevron-down ml-2 transition-transform" id="sort-icon"></i>
+        </button>
+        <div id="sort-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-neutral/20 hidden z-20">
+          <button type="button" class="block w-full text-left px-4 py-2 text-textPrimary hover:bg-background transition-colors font-body" onclick="sortCourses('newest')">
+            Newest First
+          </button>
+          <button type="button" class="block w-full text-left px-4 py-2 text-textPrimary hover:bg-background transition-colors font-body" onclick="sortCourses('oldest')">
+            Oldest First
+          </button>
+          <button type="button" class="block w-full text-left px-4 py-2 text-textPrimary hover:bg-background transition-colors font-body" onclick="sortCourses('name')">
+            Name A-Z
+          </button>
+          <button type="button" class="block w-full text-left px-4 py-2 text-textPrimary hover:bg-background transition-colors font-body" onclick="sortCourses('popular')">
+            Most Popular
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Filter Toggle -->
+      <button class="lg:hidden flex items-center px-4 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors font-semibold font-body"
+              onclick="toggleMobileFilters()">
+        <i class="fas fa-filter mr-2"></i>
+        Filters
+      </button>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Sidebar Filters -->
+      <div class="lg:w-1/4 mb-8 lg:mb-0 lg:sticky lg:top-8 self-start" id="filters-sidebar">
+        <div class="bg-white rounded-xl shadow-md border border-neutral/20 overflow-hidden">
+          <div class="px-6 py-4 border-b border-neutral/20">
+            <h2 class="font-heading font-bold text-textPrimary flex items-center">
+              <i class="fas fa-filter mr-2 text-indigo-500"></i>
+              Filters
+            </h2>
+          </div>
+          
+          <div class="p-0">
+            <div class="divide-y divide-neutral/20">
+              <!-- Category Filter -->
+              <div class="p-4">
+                <button class="w-full flex items-center justify-between text-left font-heading font-semibold text-textPrimary mb-3" 
+                        onclick="toggleAccordion('category')" aria-expanded="false" aria-controls="category-content">
+                  <span class="flex items-center">
+                    <i class="fas fa-tag mr-2 text-textSecondary"></i>
+                    Subject
+                  </span>
+                  <i class="fas fa-chevron-down ml-auto transition-transform" id="category-icon"></i>
+                </button>
+                <div id="category-content" class="overflow-hidden transition-all duration-300 max-h-0" aria-hidden="true">
+                  <div class="space-y-2 mt-2">
+                    <label class="flex items-center cursor-pointer font-body">
+                      <input type="radio" name="category" id="all-categories" value="" class="mr-2" checked>
+                      <span class="text-textPrimary">All Subjects</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer font-body">
+                      <input type="radio" name="category" id="math" value="math" class="mr-2">
+                      <span class="text-textPrimary">Mathematics</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer font-body">
+                      <input type="radio" name="category" id="science" value="science" class="mr-2">
+                      <span class="text-textPrimary">Science</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer font-body">
+                      <input type="radio" name="category" id="engineering" value="engineering" class="mr-2">
+                      <span class="text-textPrimary">Engineering</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer font-body">
+                      <input type="radio" name="category" id="business" value="business" class="mr-2">
+                      <span class="text-textPrimary">Business</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer font-body">
+                      <input type="radio" name="category" id="humanities" value="humanities" class="mr-2">
+                      <span class="text-textPrimary">Humanities</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Level Filter -->
+              <div class="p-4">
+                <button class="w-full flex items-center justify-between text-left font-heading font-semibold text-textPrimary mb-3" 
+                        onclick="toggleAccordion('level')" aria-expanded="false" aria-controls="level-content">
+                  <span class="flex items-center">
+                    <i class="fas fa-chart-line mr-2 text-textSecondary"></i>
+                    Level
+                  </span>
+                  <i class="fas fa-chevron-down ml-auto transition-transform" id="level-icon"></i>
+                </button>
+                <div id="level-content" class="overflow-hidden transition-all duration-300 max-h-0" aria-hidden="true">
+                  <div class="space-y-2 mt-2">
+                    <label class="flex items-center cursor-pointer font-body">
+                      <input type="checkbox" id="beginner" name="level" value="beginner" class="mr-2">
+                      <span class="flex-1">
+                        <span class="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded mr-2">Beginner</span>
+                        Introductory level
+                      </span>
+                    </label>
+                    <label class="flex items-center cursor-pointer font-body">
+                      <input type="checkbox" id="intermediate" name="level" value="intermediate" class="mr-2">
+                      <span class="flex-1">
+                        <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded mr-2">Intermediate</span>
+                        Some prior knowledge
+                      </span>
+                    </label>
+                    <label class="flex items-center cursor-pointer font-body">
+                      <input type="checkbox" id="advanced" name="level" value="advanced" class="mr-2">
+                      <span class="flex-1">
+                        <span class="inline-block px-2 py-1 bg-red-100 text-red-800 text-xs rounded mr-2">Advanced</span>
+                        Expert level
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Duration Filter -->
+              <div class="p-4">
+                <button class="w-full flex items-center justify-between text-left font-heading font-semibold text-textPrimary mb-3" 
+                        onclick="toggleAccordion('duration')" aria-expanded="false" aria-controls="duration-content">
+                  <span class="flex items-center">
+                    <i class="fas fa-clock mr-2 text-textSecondary"></i>
+                    Duration
+                  </span>
+                  <i class="fas fa-chevron-down ml-auto transition-transform" id="duration-icon"></i>
+                </button>
+                <div id="duration-content" class="overflow-hidden transition-all duration-300 max-h-0" aria-hidden="true">
+                  <div class="space-y-2 mt-2">
+                    <label class="flex items-center cursor-pointer font-body">
+                      <input type="checkbox" id="short" name="duration" value="short" class="mr-2">
+                      <span class="text-textPrimary">Short (< 4 weeks)</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer font-body">
+                      <input type="checkbox" id="medium" name="duration" value="medium" class="mr-2">
+                      <span class="text-textPrimary">Medium (4-8 weeks)</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer font-body">
+                      <input type="checkbox" id="long" name="duration" value="long" class="mr-2">
+                      <span class="text-textPrimary">Long (> 8 weeks)</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Rating Filter -->
+              <div class="p-4">
+                <button class="w-full flex items-center justify-between text-left font-heading font-semibold text-textPrimary mb-3" 
+                        onclick="toggleAccordion('rating')" aria-expanded="false" aria-controls="rating-content">
+                  <span class="flex items-center">
+                    <i class="fas fa-star mr-2 text-textSecondary"></i>
+                    Rating
+                  </span>
+                  <i class="fas fa-chevron-down ml-auto transition-transform" id="rating-icon"></i>
+                </button>
+                <div id="rating-content" class="overflow-hidden transition-all duration-300 max-h-0" aria-hidden="true">
+                  <div class="space-y-2 mt-2">
+                    <label class="flex items-center cursor-pointer font-body">
+                      <input type="checkbox" id="rating-4" name="rating" value="4" class="mr-2">
+                      <span class="text-textPrimary">4+ stars</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer font-body">
+                      <input type="checkbox" id="rating-3" name="rating" value="3" class="mr-2">
+                      <span class="text-textPrimary">3+ stars</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer font-body">
+                      <input type="checkbox" id="rating-any" name="rating" value="any" class="mr-2">
+                      <span class="text-textPrimary">Any rating</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Apply Filters Button -->
+            <div class="px-6 py-4 bg-background border-t border-neutral/20">
+              <button class="w-full px-4 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors font-semibold font-body mb-2" 
+                      type="button" onclick="applyFilters()">
+                <i class="fas fa-check mr-2"></i>
+                Apply Filters
+              </button>
+              <button class="w-full px-4 py-3 border border-neutral/30 text-textPrimary rounded-lg hover:bg-neutral/50 transition-colors font-semibold font-body" 
+                      type="button" onclick="clearFilters()">
+                <i class="fas fa-times mr-2"></i>
+                Clear All
+              </button>
+            </div>
           </div>
         </div>
-      </article>
-    {% endfor %}
+      </div>
+
+      <!-- Main Content -->
+      <div class="lg:w-3/4">
+        {% if courses and courses | length > 0 %}
+          <!-- Results Header -->
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+            <p class="text-textSecondary font-body">{{ courses | length }} courses found</p>
+            <div class="flex items-center gap-2">
+              <span class="text-textSecondary font-body">Filtered by:</span>
+              <div class="flex flex-wrap gap-2">
+                {% if text %}
+                <span class="inline-flex items-center px-3 py-1 bg-indigo-100 text-indigo-800 text-sm rounded-full font-body">
+                  Search: "{{ text }}"
+                  <button onclick="clearSearch()" class="ml-2 hover:text-indigo-600" aria-label="Clear search">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Course Cards Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="courses-grid">
+            {% for course in courses %}
+              <article class="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-neutral/20 overflow-hidden" role="article">
+                <div class="relative overflow-hidden">
+                  <img src="/uploads/courses/{{ course.image }}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" alt="Course image for {{ course.title }}" onerror="this.onerror=null;this.src='/Assets/subject-img.jpg';" />
+                  <div class="absolute top-3 right-3">
+                    {% if course.isFeatured %}
+                    <span class="bg-coral-500 text-white px-2 py-1 rounded-full text-sm font-semibold font-body">Featured</span>
+                    {% endif %}
+                    <span class="bg-indigo-500 text-white px-2 py-1 rounded-full text-sm font-semibold font-body mt-2 block">Active</span>
+                  </div>
+                </div>
+                <div class="p-6 flex flex-col h-full">
+                  <!-- Category Badge -->
+                  <div class="mb-3">
+                    <span class="inline-block px-2 py-1 bg-teal-100 text-teal-800 text-xs rounded font-semibold font-body">
+                      {{ course.category or 'General' }}
+                    </span>
+                  </div>
+
+                  <h3 class="font-heading font-bold text-textPrimary mb-3 text-lg leading-tight">{{ course.title }}</h3>
+                  <p class="text-textSecondary flex-grow mb-4 font-body">{{ course.description or 'No description available' | truncate(120) }}</p>
+
+                  <!-- Social Proof -->
+                  <div class="space-y-2 mb-4 text-sm font-body">
+                    <div class="flex items-center text-textSecondary">
+                      <i class="fas fa-users mr-2"></i>
+                      <span>{{ course.enrollmentCount or 0 }} students enrolled</span>
+                    </div>
+                    {% if course.rating %}
+                    <div class="flex items-center text-amber-500">
+                      <i class="fas fa-star mr-1"></i>
+                      <span class="font-semibold">{{ course.rating }}</span>
+                      <span class="text-textSecondary ml-1">({{ course.reviewCount or 0 }} reviews)</span>
+                    </div>
+                    {% endif %}
+                    {% if course.duration %}
+                    <div class="flex items-center text-textSecondary">
+                      <i class="fas fa-clock mr-2"></i>
+                      <span>{{ course.duration }}</span>
+                    </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="mt-auto">
+                    <a href="/courses/{{ course._id }}" class="w-full inline-flex items-center justify-center px-4 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors font-semibold font-body" 
+                       aria-label="View details for {{ course.title }}">
+                      <i class="fas fa-eye mr-2"></i>
+                      View Course
+                    </a>
+                  </div>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+
+          <!-- Pagination -->
+          {% if totalPages > 1 %}
+            <nav aria-label="Course pagination" class="mt-12 flex justify-center">
+              <div class="flex items-center space-x-1 bg-white p-4 rounded-lg shadow-md border border-neutral/20">
+                {% if currentPage > 1 %}
+                  <a class="px-3 py-2 text-textPrimary hover:bg-indigo-500 hover:text-white rounded transition-colors font-body" 
+                     href="/courses?page={{ currentPage - 1 }}&search={{ text }}" aria-label="Previous page">
+                    <i class="fas fa-chevron-left"></i> Previous
+                  </a>
+                {% endif %}
+
+                {% for i in range(1, totalPages + 1) %}
+                  {% if i == currentPage %}
+                    <span class="px-3 py-2 bg-indigo-500 text-white rounded font-semibold font-body">{{ i }}</span>
+                  {% else %}
+                    <a class="px-3 py-2 text-textPrimary hover:bg-background rounded transition-colors font-body" 
+                       href="/courses?page={{ i }}&search={{ text }}">{{ i }}</a>
+                  {% endif %}
+                {% endfor %}
+
+                {% if currentPage < totalPages %}
+                  <a class="px-3 py-2 text-textPrimary hover:bg-indigo-500 hover:text-white rounded transition-colors font-body" 
+                     href="/courses?page={{ currentPage + 1 }}&search={{ text }}" aria-label="Next page">
+                    Next <i class="fas fa-chevron-right"></i>
+                  </a>
+                {% endif %}
+              </div>
+            </nav>
+          {% endif %}
+        {% else %}
+          <!-- Empty State -->
+          <div class="text-center py-20">
+            <div class="max-w-md mx-auto">
+              <i class="fas fa-search text-6xl text-textSecondary mb-6"></i>
+              <h3 class="text-xl font-heading font-semibold text-textPrimary mb-3">No courses found</h3>
+              <p class="text-textSecondary mb-6 font-body">Try adjusting your search or filters, or be the first to add a course!</p>
+              <a href="/courses/add" class="inline-flex items-center px-6 py-3 bg-indigo-500 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 font-body">
+                <i class="fas fa-plus mr-2"></i>
+                Add the First Course
+              </a>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
   </div>
 
-  {% if totalPages > 1 %}
-    <nav class="mt-8 flex items-center justify-center gap-2" aria-label="Pagination">
-      {% if  currentPage > 1 %}
-        <a href="/courses?page={{ currentPage - 1 }}&search={{ text }}" class="btn-secondary" aria-label="Previous page">Previous</a>
-      {% endif %}
+  <!-- Email Capture Footer -->
+  <div class="bg-indigo-50 mt-16">
+    <div class="container mx-auto px-4 lg:px-8 py-12">
+      <div class="text-center max-w-2xl mx-auto">
+        <h2 class="text-2xl font-heading font-bold text-textPrimary mb-4">Stay Updated with New Courses</h2>
+        <p class="text-textSecondary mb-6 font-body">Get notified when new courses matching your interests are added</p>
+        <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+          <input type="email" placeholder="Enter your email" class="flex-1 px-4 py-3 border border-neutral/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-body" 
+                 aria-label="Email for course updates">
+          <button type="submit" class="px-6 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors font-semibold font-body">
+            Subscribe
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
-      {% for i in range(1, totalPages + 1) %}
-        {% if i == currentPage %}
-          <span class="btn-secondary bg-gray-100" aria-current="page">{{ i }}</span>
-        {% else %}
-          <a href="/courses?page={{ i }}&search={{ text }}" class="btn-secondary">{{ i }}</a>
-        {% endif %}
-      {% endfor %}
+<script>
+  // Accordion functionality
+  function toggleAccordion(section) {
+    const content = document.getElementById(`${section}-content`);
+    const icon = document.getElementById(`${section}-icon`);
+    const button = document.querySelector(`[aria-controls="${section}-content"]`);
+    
+    const isExpanded = content.classList.contains('max-h-0');
+    content.classList.toggle('max-h-0', !isExpanded);
+    content.classList.toggle('max-h-96', isExpanded);
+    icon.classList.toggle('rotate-180', isExpanded);
+    
+    // Update ARIA attributes
+    button.setAttribute('aria-expanded', isExpanded);
+    content.setAttribute('aria-hidden', !isExpanded);
+  }
 
-      {% if  currentPage < totalPages %}
-        <a href="/courses?page={{ currentPage + 1 }}&search={{ text }}" class="btn-secondary" aria-label="Next page">Next</a>
-      {% endif %}
-    </nav>
-  {% endif %}
-{% else %}
-  <p class="mt-8 text-gray-600">No Courses added.</p>
-{% endif %}
+  // Sort dropdown functionality
+  function toggleSortDropdown() {
+    const dropdown = document.getElementById('sort-dropdown');
+    const icon = document.getElementById('sort-icon');
+    dropdown.classList.toggle('hidden');
+    icon.classList.toggle('rotate-180');
+  }
+
+  // Mobile filters toggle
+  function toggleMobileFilters() {
+    const sidebar = document.getElementById('filters-sidebar');
+    sidebar.classList.toggle('hidden');
+  }
+
+  // Filter application
+  function applyFilters() {
+    const category = document.querySelector('input[name="category"]:checked')?.value || '';
+    const levels = Array.from(document.querySelectorAll('input[name="level"]:checked')).map(cb => cb.value);
+    const durations = Array.from(document.querySelectorAll('input[name="duration"]:checked')).map(cb => cb.value);
+    const ratings = Array.from(document.querySelectorAll('input[name="rating"]:checked')).map(cb => cb.value);
+
+    const params = new URLSearchParams(window.location.search);
+    
+    if (category) params.set('category', category);
+    else params.delete('category');
+
+    if (levels.length > 0) params.set('level', levels.join(','));
+    else params.delete('level');
+
+    if (durations.length > 0) params.set('duration', durations.join(','));
+    else params.delete('duration');
+
+    if (ratings.length > 0) params.set('rating', ratings.join(','));
+    else params.delete('rating');
+
+    window.location.search = params.toString();
+  }
+
+  function clearFilters() {
+    document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
+      input.checked = input.value === '' || false;
+    });
+    document.getElementById('all-categories').checked = true;
+
+    const url = new URL(window.location);
+    ['category', 'level', 'duration', 'rating'].forEach(param => {
+      url.searchParams.delete(param);
+    });
+    window.location.href = url.toString();
+  }
+
+  function clearSearch() {
+    const url = new URL(window.location);
+    url.searchParams.delete('search');
+    window.location.href = url.toString();
+  }
+
+  function sortCourses(sortBy) {
+    const url = new URL(window.location);
+    url.searchParams.set('sort', sortBy);
+    window.location.href = url.toString();
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#sort-dropdown') && !e.target.closest('[onclick="toggleSortDropdown()"]')) {
+      document.getElementById('sort-dropdown').classList.add('hidden');
+      document.getElementById('sort-icon').classList.remove('rotate-180');
+    }
+  });
+
+  // Initialize accordions on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    // Close all accordions by default
+    document.querySelectorAll('[id$="-content"]').forEach(content => {
+      content.classList.add('max-h-0');
+      content.setAttribute('aria-hidden', 'true');
+    });
+    
+    document.querySelectorAll('[aria-controls]').forEach(button => {
+      button.setAttribute('aria-expanded', 'false');
+    });
+
+    // Auto-apply filters on change (optional)
+    const filterInputs = document.querySelectorAll('input[name="category"], input[name="level"], input[name="duration"], input[name="rating"]');
+    filterInputs.forEach(input => {
+      input.addEventListener('change', function() {
+        // Uncomment to auto-apply filters
+        // applyFilters();
+      });
+    });
+  });
+</script>
 {% endblock %}

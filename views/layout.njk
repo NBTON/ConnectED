@@ -1,92 +1,323 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-gray-50">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{{ title or 'connectED' }}</title>
-    <link rel="stylesheet" href="/styles/tailwind.css" />
+    <title>{{ title or 'ConnectED' }}</title>
+    <!-- Tailwind CSS -->
+    <link href="/styles/tailwind.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Google Fonts: Open Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <style>
+      /* Custom overrides for Tailwind */
+      body {
+        font-family: 'Open Sans', sans-serif;
+      }
+      h1, h2, h3, h4, h5, h6 {
+        font-family: 'Open Sans', sans-serif;
+        font-weight: 600;
+      }
+      /* Focus styles for accessibility */
+      a:focus, button:focus, input:focus, select:focus, textarea:focus {
+        outline: 2px solid #2563EB;
+        outline-offset: 2px;
+      }
+      /* Skip to content link */
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 6px;
+        background: #2563EB;
+        color: white;
+        padding: 8px;
+        z-index: 1000;
+        border-radius: 4px;
+        text-decoration: none;
+      }
+      .skip-link:focus {
+        top: 6px;
+      }
+      /* Dark mode support */
+      [data-theme="dark"] {
+        --bg-color: #0f172a;
+        --text-color: #f1f5f9;
+        --card-bg: #1e293b;
+      }
+    </style>
     <link rel="icon" href="/Assets/ConnectEdLogo.png" />
   </head>
-  <body class="min-h-full text-gray-900">
-    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 bg-white text-gray-900 px-3 py-2 rounded-md shadow">Skip to content</a>
+  <body class="bg-neutral text-textPrimary font-sans min-h-screen flex flex-col" data-theme="light">
+    <a href="#main" class="skip-link">Skip to content</a>
 
-    <header class="bg-white shadow-sm sticky top-0 z-40">
-      <nav class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Primary">
-        <div class="flex h-16 items-center justify-between">
-          <div class="flex items-center gap-3">
-            <a href="/" class="flex items-center gap-2">
-              <img src="/Assets/ConnectEdLogo.png" alt="connectED logo" class="h-8 w-auto" />
-              <span class="text-lg font-semibold tracking-tight">connectED</span>
+    <header>
+      <nav class="bg-primary text-white shadow-lg" aria-label="Primary navigation">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-16">
+            <!-- Logo -->
+            <a class="flex items-center space-x-3" href="/">
+              <img src="/Assets/ConnectEdLogo.png" alt="ConnectED logo" class="h-8 w-auto" />
+              <span class="text-xl font-heading font-bold">ConnectED</span>
             </a>
-          </div>
-          <div class="hidden md:flex items-center gap-6">
-            <a href="/about" class="text-sm font-medium text-gray-700 hover:text-primary">About</a>
-            {% if currentUser %}
-              <a href="/courses" class="text-sm font-medium text-gray-700 hover:text-primary">Courses</a>
-              <a href="/courses/add" class="text-sm font-medium text-gray-700 hover:text-primary">Add Course</a>
-              <a href="/me/groups" class="text-sm font-medium text-gray-700 hover:text-primary">My Groups</a>
-              <form action="/logout" method="POST" class="inline">
-                <button class="btn-secondary">Logout</button>
+
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center space-x-6">
+              <!-- Search form -->
+              <form class="flex items-center space-x-2" role="search" aria-label="Search">
+                <div class="relative">
+                  <input
+                    class="w-64 px-4 py-2 bg-white text-textPrimary rounded-lg border border-neutral/20 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                    type="search"
+                    placeholder="Search courses, groups..."
+                    aria-label="Search"
+                  >
+                  <button class="absolute right-2 top-1/2 transform -translate-y-1/2 text-textSecondary hover:text-primary" type="submit" aria-label="Search">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
               </form>
-            {% else %}
-              <a href="/login" class="btn-secondary">Sign in</a>
-              <a href="/register" class="btn-primary">Get started</a>
-            {% endif %}
+
+              <!-- Navigation Links -->
+              <div class="flex items-center space-x-4">
+                <a href="/about" class="text-white hover:text-indigo-200 transition-colors font-body">About</a>
+                <button id="theme-toggle" class="px-3 py-1 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors text-sm font-body" aria-label="Switch to dark mode">
+                  <i class="fas fa-moon mr-1" aria-hidden="true"></i>Dark
+                </button>
+
+                {% if currentUser %}
+                  <a href="/courses" class="text-white hover:text-indigo-200 transition-colors font-body">Courses</a>
+                  <a href="/me/groups" class="text-white hover:text-indigo-200 transition-colors font-body">My Groups</a>
+                  <div class="relative group">
+                    <button class="flex items-center space-x-2 text-white hover:text-indigo-200 transition-colors font-body" aria-label="User menu">
+                      <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-sm" aria-hidden="true"></i>
+                      </div>
+                      <i class="fas fa-chevron-down text-xs" aria-hidden="true"></i>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-neutral/20 py-2 hidden group-hover:block">
+                      <a href="/me/dashboard" class="block px-4 py-2 text-textPrimary hover:bg-background transition-colors font-body">Dashboard</a>
+                      <a href="/me/profile" class="block px-4 py-2 text-textPrimary hover:bg-background transition-colors font-body">Profile</a>
+                      <a href="/courses/add" class="block px-4 py-2 text-textPrimary hover:bg-background transition-colors font-body">Add Course</a>
+                      <div class="border-t border-neutral/20 my-1"></div>
+                      <form action="/logout" method="POST" class="inline">
+                        <button class="block w-full text-left px-4 py-2 text-error hover:bg-background transition-colors font-body" type="submit">
+                          <i class="fas fa-sign-out-alt mr-2" aria-hidden="true"></i>Logout
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                {% else %}
+                  <a href="/login" class="px-4 py-2 border border-white text-white rounded-lg hover:bg-white hover:text-primary transition-colors font-body">Sign in</a>
+                  <a href="/register" class="px-4 py-2 bg-white text-primary rounded-lg hover:bg-gray-100 transition-colors font-body">Get started</a>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Mobile menu button -->
+            <button id="mobile-menu-toggle" class="md:hidden p-2 text-white hover:text-indigo-200 rounded-lg" aria-label="Toggle menu" aria-expanded="false">
+              <i class="fas fa-bars text-xl" aria-hidden="true"></i>
+            </button>
           </div>
-          <button id="menuBtn" class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/50" aria-controls="mobileMenu" aria-expanded="false">
-            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-            </svg>
-            <span class="sr-only">Open main menu</span>
-          </button>
-        </div>
-        <div id="mobileMenu" class="md:hidden hidden border-t border-gray-200 py-3" role="region">
-          <div class="flex flex-col gap-2">
-            <a href="/about" class="px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">About</a>
-            {% if currentUser %}
-              <a href="/courses" class="px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">Courses</a>
-              <a href="/courses/add" class="px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">Add Course</a>
-              <a href="/me/groups" class="px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">My Groups</a>
-              <form action="/logout" method="POST" class="px-2 py-1">
-                <button class="w-full btn-secondary">Logout</button>
+
+          <!-- Mobile navigation menu -->
+          <div id="mobile-menu" class="md:hidden hidden bg-primary border-t border-indigo-600">
+            <div class="px-4 py-4 space-y-3">
+              <!-- Mobile Search -->
+              <form class="mb-4" role="search" aria-label="Search">
+                <div class="relative">
+                  <input
+                    class="w-full px-4 py-2 bg-white text-textPrimary rounded-lg border border-neutral/20 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                    type="search"
+                    placeholder="Search courses, groups..."
+                    aria-label="Search"
+                  >
+                  <button class="absolute right-2 top-1/2 transform -translate-y-1/2 text-textSecondary hover:text-primary" type="submit" aria-label="Search">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
               </form>
-            {% else %}
-              <a href="/login" class="px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">Sign in</a>
-              <a href="/register" class="px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md">Get started</a>
-            {% endif %}
+
+              <a href="/about" class="block py-2 text-white hover:text-indigo-200 transition-colors font-body">About</a>
+              <button id="mobile-theme-toggle" class="flex items-center space-x-2 w-full text-left py-2 text-white hover:text-indigo-200 transition-colors font-body" aria-label="Switch to dark mode">
+                <i class="fas fa-moon" aria-hidden="true"></i>
+                <span>Dark Mode</span>
+              </button>
+
+              {% if currentUser %}
+                <a href="/courses" class="block py-2 text-white hover:text-indigo-200 transition-colors font-body">Courses</a>
+                <a href="/me/groups" class="block py-2 text-white hover:text-indigo-200 transition-colors font-body">My Groups</a>
+                <a href="/me/dashboard" class="block py-2 text-white hover:text-indigo-200 transition-colors font-body">Dashboard</a>
+                <a href="/me/profile" class="block py-2 text-white hover:text-indigo-200 transition-colors font-body">Profile</a>
+                <a href="/courses/add" class="block py-2 text-white hover:text-indigo-200 transition-colors font-body">Add Course</a>
+                <div class="border-t border-indigo-600 my-2"></div>
+                <form action="/logout" method="POST">
+                  <button class="flex items-center space-x-2 w-full text-left py-2 text-error hover:text-red-300 transition-colors font-body" type="submit">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                    <span>Logout</span>
+                  </button>
+                </form>
+              {% else %}
+                <div class="border-t border-indigo-600 my-2"></div>
+                <a href="/login" class="block py-2 text-white hover:text-indigo-200 transition-colors font-body">Sign in</a>
+                <a href="/register" class="block py-3 bg-white text-primary rounded-lg hover:bg-gray-100 transition-colors font-body text-center">Get started</a>
+              {% endif %}
+            </div>
           </div>
         </div>
       </nav>
     </header>
 
-    <main id="main" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <main id="main" class="flex-grow">
       {% if flash %}
-        <div id="flash" class="mb-6 relative rounded-md p-4 {{ flash.type == 'success' ? 'bg-green-50 text-green-800' : flash.type == 'error' ? 'bg-red-50 text-red-800' : flash.type == 'warning' ? 'bg-yellow-50 text-yellow-800' : 'bg-blue-50 text-blue-800' }}">
-          <button type="button" aria-label="Dismiss" class="absolute top-3 right-3 rounded-md p-1 hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50" onclick="document.getElementById('flash').remove()">✕</button>
-          {{ flash.message }}
+        <div id="flash" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+          <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-4 relative" role="alert">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center {{ flash.type == 'error' ? 'bg-error/10' : 'bg-success/10' }}">
+                  <i class="fas {{ flash.type == 'error' ? 'fa-exclamation-triangle' : 'fa-check-circle' }} {{ flash.type == 'error' ? 'text-error' : 'text-success' }}"></i>
+                </div>
+                <p class="font-body text-textPrimary">{{ flash.message }}</p>
+              </div>
+              <button type="button" class="text-textSecondary hover:text-textPrimary p-1 rounded-lg hover:bg-background transition-colors" data-dismiss="flash" aria-label="Close">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
         </div>
       {% endif %}
 
-      {% block content %}{% endblock %}
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+      </div>
     </main>
 
-    <footer class="border-t bg-white">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 text-sm text-gray-600 flex items-center justify-between">
-        <p>&copy; {{ (new Date()).getFullYear() }} connectED</p>
-        <p class="text-gray-400">Built for students</p>
+    <footer class="bg-white border-t border-neutral/20 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <!-- Company Info -->
+          <div class="md:col-span-2">
+            <div class="flex items-center space-x-3 mb-4">
+              <img src="/Assets/ConnectEdLogo.png" alt="ConnectED logo" class="h-8 w-auto" />
+              <span class="text-xl font-heading font-bold text-textPrimary">ConnectED</span>
+            </div>
+            <p class="text-textSecondary font-body mb-4">
+              Empowering students worldwide through collaborative learning and innovative educational tools.
+            </p>
+            <div class="flex space-x-4">
+              <a href="#" class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors" aria-label="Twitter">
+                <i class="fab fa-twitter"></i>
+              </a>
+              <a href="#" class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors" aria-label="Facebook">
+                <i class="fab fa-facebook"></i>
+              </a>
+              <a href="#" class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors" aria-label="LinkedIn">
+                <i class="fab fa-linkedin"></i>
+              </a>
+              <a href="#" class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors" aria-label="GitHub">
+                <i class="fab fa-github"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div>
+            <h3 class="font-heading font-semibold text-textPrimary mb-4">Platform</h3>
+            <ul class="space-y-2">
+              <li><a href="/courses" class="text-textSecondary hover:text-primary transition-colors font-body">Browse Courses</a></li>
+              <li><a href="/about" class="text-textSecondary hover:text-primary transition-colors font-body">About Us</a></li>
+              <li><a href="#" class="text-textSecondary hover:text-primary transition-colors font-body">Help Center</a></li>
+              <li><a href="#" class="text-textSecondary hover:text-primary transition-colors font-body">Contact</a></li>
+            </ul>
+          </div>
+
+          <!-- Legal -->
+          <div>
+            <h3 class="font-heading font-semibold text-textPrimary mb-4">Legal</h3>
+            <ul class="space-y-2">
+              <li><a href="#" class="text-textSecondary hover:text-primary transition-colors font-body">Privacy Policy</a></li>
+              <li><a href="#" class="text-textSecondary hover:text-primary transition-colors font-body">Terms of Service</a></li>
+              <li><a href="#" class="text-textSecondary hover:text-primary transition-colors font-body">Cookie Policy</a></li>
+              <li><a href="#" class="text-textSecondary hover:text-primary transition-colors font-body">Accessibility</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="border-t border-neutral/20 mt-8 pt-8 flex flex-col md:flex-row items-center justify-between">
+          <p class="text-textSecondary font-body mb-4 md:mb-0">
+            &copy; {{ now() | date('YYYY') }} ConnectED. All rights reserved.
+          </p>
+          <p class="text-textSecondary font-body">
+            Built with ❤️ for students everywhere
+          </p>
+        </div>
       </div>
     </footer>
 
+    <!-- Socket.io Client -->
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="/Script/socket-client.js"></script>
+
+    <!-- React -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="/Script/Dashboard.js"></script>
+    
     <script>
-      const menuBtn = document.getElementById('menuBtn');
-      const mobileMenu = document.getElementById('mobileMenu');
-      if (menuBtn && mobileMenu) {
-        menuBtn.addEventListener('click', () => {
-          const expanded = menuBtn.getAttribute('aria-expanded') === 'true'
-          menuBtn.setAttribute('aria-expanded', String(!expanded))
-          mobileMenu.classList.toggle('hidden')
-        })
-      }
+      // Mobile menu toggle
+      document.addEventListener('DOMContentLoaded', function() {
+        const mobileToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+        const html = document.documentElement;
+        
+        if (mobileToggle && mobileMenu) {
+          mobileToggle.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+            const isExpanded = !mobileMenu.classList.contains('hidden');
+            mobileToggle.setAttribute('aria-expanded', isExpanded);
+            mobileToggle.innerHTML = isExpanded ? '<i class="fas fa-times text-xl"></i>' : '<i class="fas fa-bars text-xl"></i>';
+          });
+        }
+        
+        // Theme toggle functionality (for both desktop and mobile)
+        const themeToggles = document.querySelectorAll('#theme-toggle, #mobile-theme-toggle');
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        
+        themeToggles.forEach(toggle => {
+          if (toggle) {
+            toggle.textContent = savedTheme === 'light' ? '🌙 Dark' : '☀️ Light';
+            toggle.setAttribute('aria-label', savedTheme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+            
+            toggle.addEventListener('click', function() {
+              const currentTheme = html.getAttribute('data-theme');
+              const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+              
+              html.setAttribute('data-theme', newTheme);
+              localStorage.setItem('theme', newTheme);
+              
+              // Update all toggles
+              themeToggles.forEach(t => {
+                t.textContent = newTheme === 'light' ? '🌙 Dark' : '☀️ Light';
+                t.setAttribute('aria-label', newTheme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+              });
+              
+              // Trigger custom event
+              document.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme } }));
+            });
+          }
+        });
+        
+        // Flash message dismiss
+        document.querySelectorAll('[data-dismiss="flash"]').forEach(btn => {
+          btn.addEventListener('click', function() {
+            this.closest('#flash').remove();
+          });
+        });
+      });
     </script>
   </body>
 </html>

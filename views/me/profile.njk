@@ -1,0 +1,539 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+<div class="min-h-screen bg-background">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Profile Header with Cover Photo -->
+    <div class="bg-white rounded-xl shadow-md border border-neutral/20 overflow-hidden mb-6">
+      <!-- Cover Photo Section -->
+      <div class="h-32 bg-gradient-to-r from-primary to-secondary relative">
+        <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+        <div class="absolute top-4 right-4">
+          <button class="bg-white/20 backdrop-blur-sm text-white p-2 rounded-lg hover:bg-white/30 transition-colors" aria-label="Change cover photo">
+            <i class="fas fa-camera" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Profile Info Section -->
+      <div class="px-6 pb-6">
+        <div class="flex flex-col md:flex-row items-start md:items-end space-y-4 md:space-y-0 md:space-x-6 -mt-12">
+          <!-- Avatar -->
+          <div class="w-24 h-24 bg-white rounded-full p-1 flex-shrink-0">
+            <div class="w-full h-full bg-primary/10 rounded-full flex items-center justify-center">
+              <i class="fas fa-user text-primary text-3xl"></i>
+            </div>
+          </div>
+
+          <!-- User Info -->
+          <div class="flex-1 pt-12 md:pt-0">
+            <h1 class="text-2xl font-heading font-bold text-textPrimary mb-2">
+              {% if currentUser.firstName and currentUser.lastName %}
+                {{ currentUser.firstName }} {{ currentUser.lastName }}
+              {% else %}
+                {{ currentUser.username }}
+              {% endif %}
+            </h1>
+            <p class="text-textSecondary font-body mb-4">{{ currentUser.email }}</p>
+
+            <!-- Stats Row -->
+            <div class="flex flex-wrap gap-4">
+              <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                  <i class="fas fa-book text-primary text-sm"></i>
+                </div>
+                <span class="text-sm font-body text-textPrimary">3 courses</span>
+              </div>
+
+              <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-secondary/10 rounded-full flex items-center justify-center">
+                  <i class="fas fa-users text-secondary text-sm"></i>
+                </div>
+                <span class="text-sm font-body text-textPrimary">2 groups</span>
+              </div>
+
+              <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-coral-500/10 rounded-full flex items-center justify-center">
+                  <i class="fas fa-trophy text-coral-500 text-sm"></i>
+                </div>
+                <span class="text-sm font-body text-textPrimary">5 achievements</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit Button -->
+          <button class="btn-secondary flex items-center space-x-2" aria-label="Edit profile information">
+            <i class="fas fa-edit" aria-hidden="true"></i>
+            <span>Edit Profile</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="bg-white rounded-xl shadow-md border border-neutral/20 mb-6">
+      <nav class="flex overflow-x-auto" role="tablist" aria-label="Profile sections">
+        <button class="tab-button active" role="tab" aria-selected="true" aria-controls="profile-tab" data-tab="profile" id="tab-profile">
+          <i class="fas fa-user mr-2" aria-hidden="true"></i>
+          Profile
+        </button>
+        <button class="tab-button" role="tab" aria-selected="false" aria-controls="achievements-tab" data-tab="achievements" id="tab-achievements" tabindex="-1">
+          <i class="fas fa-trophy mr-2" aria-hidden="true"></i>
+          Achievements
+        </button>
+        <button class="tab-button" role="tab" aria-selected="false" aria-controls="settings-tab" data-tab="settings" id="tab-settings" tabindex="-1">
+          <i class="fas fa-cog mr-2" aria-hidden="true"></i>
+          Settings
+        </button>
+        <button class="tab-button" role="tab" aria-selected="false" aria-controls="activity-tab" data-tab="activity" id="tab-activity" tabindex="-1">
+          <i class="fas fa-history mr-2" aria-hidden="true"></i>
+          Activity
+        </button>
+      </nav>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <!-- Profile Tab -->
+      <div id="profile-tab" class="tab-pane active" role="tabpanel" aria-labelledby="tab-profile">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Personal Information Card -->
+          <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6">
+            <h2 class="text-lg font-heading font-semibold text-textPrimary mb-4">Personal Information</h2>
+            
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm font-body font-medium text-textSecondary">Full Name</label>
+                <p class="text-textPrimary font-body">
+                  {% if currentUser.firstName and currentUser.lastName %}
+                    {{ currentUser.firstName }} {{ currentUser.lastName }}
+                  {% else %}
+                    Not set
+                  {% endif %}
+                </p>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-body font-medium text-textSecondary">Username</label>
+                <p class="text-textPrimary font-body">{{ currentUser.username }}</p>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-body font-medium text-textSecondary">Email</label>
+                <p class="text-textPrimary font-body">{{ currentUser.email }}</p>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-body font-medium text-textSecondary">Member Since</label>
+                <p class="text-textPrimary font-body">September 2024</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bio Card -->
+          <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-heading font-semibold text-textPrimary">About Me</h2>
+              <button class="text-primary hover:text-indigo-600 text-sm font-body font-medium" aria-label="Edit bio">
+                <i class="fas fa-edit mr-1" aria-hidden="true"></i> Edit
+              </button>
+            </div>
+            
+            <p class="text-textSecondary font-body" aria-live="polite">
+              {% if currentUser.bio %}
+                {{ currentUser.bio }}
+              {% else %}
+                No bio added yet. Tell others about yourself and your learning goals!
+              {% endif %}
+            </p>
+          </div>
+
+          <!-- Learning Goals Card -->
+          <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6 md:col-span-2">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-heading font-semibold text-textPrimary">Learning Goals</h2>
+              <button class="text-primary hover:text-indigo-600 text-sm font-body font-medium transition-colors" aria-label="Add learning goal">
+                <i class="fas fa-plus mr-1" aria-hidden="true"></i> Add Goal
+              </button>
+            </div>
+
+            <div class="space-y-3" role="list" aria-label="Learning goals">
+              <div class="flex items-center justify-between p-4 bg-background rounded-lg border border-neutral/10 hover:border-primary/20 transition-colors" role="listitem">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-code text-primary"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-heading font-semibold text-textPrimary text-sm">Complete Computer Science Fundamentals</h3>
+                    <p class="text-textSecondary text-xs font-body">Target: December 2024</p>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <div class="w-16 bg-gray-200 rounded-full h-2">
+                    <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
+                  </div>
+                  <span class="bg-primary/10 text-primary text-xs font-body font-medium px-2 py-1 rounded-full" aria-label="Status: In Progress">75%</span>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between p-4 bg-background rounded-lg border border-neutral/10 hover:border-secondary/20 transition-colors" role="listitem">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-users text-secondary"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-heading font-semibold text-textPrimary text-sm">Join 3 Study Groups</h3>
+                    <p class="text-textSecondary text-xs font-body">Target: Ongoing</p>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <div class="w-16 bg-gray-200 rounded-full h-2">
+                    <div class="bg-secondary h-2 rounded-full" style="width: 67%"></div>
+                  </div>
+                  <span class="bg-secondary/10 text-secondary text-xs font-body font-medium px-2 py-1 rounded-full" aria-label="Progress: 2 out of 3 complete">2/3</span>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between p-4 bg-background rounded-lg border border-neutral/10 hover:border-coral-500/20 transition-colors" role="listitem">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 bg-coral-500/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-certificate text-coral-500"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-heading font-semibold text-textPrimary text-sm">Earn Professional Certificate</h3>
+                    <p class="text-textSecondary text-xs font-body">Target: March 2025</p>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <div class="w-16 bg-gray-200 rounded-full h-2">
+                    <div class="bg-coral-500 h-2 rounded-full" style="width: 25%"></div>
+                  </div>
+                  <span class="bg-coral-500/10 text-coral-500 text-xs font-body font-medium px-2 py-1 rounded-full" aria-label="Progress: Just started">25%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Achievements Tab -->
+      <div id="achievements-tab" class="tab-pane hidden" role="tabpanel" aria-labelledby="tab-achievements">
+        <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-heading font-semibold text-textPrimary">Your Achievements</h2>
+            <div class="flex items-center space-x-2">
+              <span class="text-sm font-body text-textSecondary">5 of 8 unlocked</span>
+              <div class="w-24 bg-gray-200 rounded-full h-2">
+                <div class="bg-primary h-2 rounded-full" style="width: 62.5%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" role="list" aria-label="Achievements">
+            <!-- Achievement 1 -->
+            <div class="bg-background rounded-lg p-4 text-center border border-primary/20 hover:border-primary/30 transition-colors" role="listitem">
+              <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3" aria-hidden="true">
+                <i class="fas fa-star text-primary text-2xl"></i>
+              </div>
+              <h3 class="font-heading font-semibold text-textPrimary text-sm mb-1">First Steps</h3>
+              <p class="text-textSecondary text-xs font-body mb-2">Complete your first lesson</p>
+              <span class="inline-block text-xs text-primary font-body font-medium bg-primary/10 px-2 py-1 rounded-full" aria-label="Achievement earned">Earned</span>
+            </div>
+
+            <!-- Achievement 2 -->
+            <div class="bg-background rounded-lg p-4 text-center border border-secondary/20 hover:border-secondary/30 transition-colors" role="listitem">
+              <div class="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-3" aria-hidden="true">
+                <i class="fas fa-users text-secondary text-2xl"></i>
+              </div>
+              <h3 class="font-heading font-semibold text-textPrimary text-sm mb-1">Social Learner</h3>
+              <p class="text-textSecondary text-xs font-body mb-2">Join your first study group</p>
+              <span class="inline-block text-xs text-secondary font-body font-medium bg-secondary/10 px-2 py-1 rounded-full" aria-label="Achievement earned">Earned</span>
+            </div>
+
+            <!-- Achievement 3 -->
+            <div class="bg-background rounded-lg p-4 text-center border border-coral-500/20 hover:border-coral-500/30 transition-colors" role="listitem">
+              <div class="w-16 h-16 bg-coral-500/10 rounded-full flex items-center justify-center mx-auto mb-3" aria-hidden="true">
+                <i class="fas fa-bolt text-coral-500 text-2xl"></i>
+              </div>
+              <h3 class="font-heading font-semibold text-textPrimary text-sm mb-1">Quick Learner</h3>
+              <p class="text-textSecondary text-xs font-body mb-2">Complete 5 lessons in a week</p>
+              <span class="inline-block text-xs text-coral-500 font-body font-medium bg-coral-500/10 px-2 py-1 rounded-full" aria-label="Achievement earned">Earned</span>
+            </div>
+
+            <!-- Achievement 4 -->
+            <div class="bg-background rounded-lg p-4 text-center opacity-60 border border-gray-200" role="listitem" aria-disabled="true">
+              <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3" aria-hidden="true">
+                <i class="fas fa-graduation-cap text-gray-400 text-2xl"></i>
+              </div>
+              <h3 class="font-heading font-semibold text-textPrimary text-sm mb-1">Course Master</h3>
+              <p class="text-textSecondary text-xs font-body mb-2">Complete a full course</p>
+              <span class="inline-block text-xs text-gray-400 font-body font-medium bg-gray-100 px-2 py-1 rounded-full" aria-label="Achievement locked">Locked</span>
+            </div>
+
+            <!-- Achievement 5 -->
+            <div class="bg-background rounded-lg p-4 text-center opacity-60 border border-gray-200" role="listitem" aria-disabled="true">
+              <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3" aria-hidden="true">
+                <i class="fas fa-comments text-gray-400 text-2xl"></i>
+              </div>
+              <h3 class="font-heading font-semibold text-textPrimary text-sm mb-1">Active Contributor</h3>
+              <p class="text-textSecondary text-xs font-body mb-2">Post 10 messages in groups</p>
+              <span class="inline-block text-xs text-gray-400 font-body font-medium bg-gray-100 px-2 py-1 rounded-full" aria-label="Achievement locked">Locked</span>
+            </div>
+
+            <!-- Achievement 6 -->
+            <div class="bg-background rounded-lg p-4 text-center opacity-60 border border-gray-200" role="listitem" aria-disabled="true">
+              <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3" aria-hidden="true">
+                <i class="fas fa-trophy text-gray-400 text-2xl"></i>
+              </div>
+              <h3 class="font-heading font-semibold text-textPrimary text-sm mb-1">Top Performer</h3>
+              <p class="text-textSecondary text-xs font-body mb-2">Score 95%+ on 3 assessments</p>
+              <span class="inline-block text-xs text-gray-400 font-body font-medium bg-gray-100 px-2 py-1 rounded-full" aria-label="Achievement locked">Locked</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Tab -->
+      <div id="settings-tab" class="tab-pane hidden" role="tabpanel" aria-labelledby="tab-settings">
+        <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6">
+          <h2 class="text-xl font-heading font-semibold text-textPrimary mb-6">Account Settings</h2>
+          
+          <div class="space-y-6">
+            <!-- Notification Settings -->
+            <div>
+              <h3 class="text-lg font-heading font-semibold text-textPrimary mb-4">Notifications</h3>
+              <div class="space-y-3" role="group" aria-labelledby="notifications-heading">
+                <label class="flex items-center">
+                  <input type="checkbox" class="rounded text-primary focus:ring-primary" checked aria-label="Enable email notifications">
+                  <span class="ml-2 text-sm font-body text-textPrimary">Email notifications</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" class="rounded text-primary focus:ring-primary" checked aria-label="Enable course updates">
+                  <span class="ml-2 text-sm font-body text-textPrimary">Course updates</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" class="rounded text-primary focus:ring-primary" aria-label="Enable group messages notifications">
+                  <span class="ml-2 text-sm font-body text-textPrimary">Group messages</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Privacy Settings -->
+            <div>
+              <h3 class="text-lg font-heading font-semibold text-textPrimary mb-4">Privacy</h3>
+              <div class="space-y-3" role="group" aria-labelledby="privacy-heading">
+                <label class="flex items-center">
+                  <input type="checkbox" class="rounded text-primary focus:ring-primary" checked aria-label="Show profile to other users">
+                  <span class="ml-2 text-sm font-body text-textPrimary">Show profile to other users</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" class="rounded text-primary focus:ring-primary" aria-label="Show learning progress publicly">
+                  <span class="ml-2 text-sm font-body text-textPrimary">Show learning progress publicly</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Account Actions -->
+            <div>
+              <h3 class="text-lg font-heading font-semibold text-textPrimary mb-4">Account Actions</h3>
+              <div class="space-y-2">
+                <button class="text-primary hover:text-indigo-600 text-sm font-body font-medium" aria-label="Change password">
+                  <i class="fas fa-key mr-1" aria-hidden="true"></i> Change Password
+                </button>
+                <br>
+                <button class="text-error hover:text-red-700 text-sm font-body font-medium" aria-label="Delete account">
+                  <i class="fas fa-trash mr-1" aria-hidden="true"></i> Delete Account
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Tab -->
+      <div id="activity-tab" class="tab-pane hidden" role="tabpanel" aria-labelledby="tab-activity">
+        <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-heading font-semibold text-textPrimary">Recent Activity</h2>
+            <div class="flex items-center space-x-2">
+              <button class="text-primary hover:text-indigo-600 text-sm font-body font-medium" aria-label="Filter activities">
+                <i class="fas fa-filter mr-1" aria-hidden="true"></i> Filter
+              </button>
+              <button class="text-primary hover:text-indigo-600 text-sm font-body font-medium" aria-label="Export activity">
+                <i class="fas fa-download mr-1" aria-hidden="true"></i> Export
+              </button>
+            </div>
+          </div>
+
+          <div class="space-y-4" role="list" aria-label="Recent activities">
+            <!-- Activity Item -->
+            <div class="flex items-start space-x-3 p-4 bg-background rounded-lg border border-neutral/10 hover:border-primary/20 transition-colors" role="listitem">
+              <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0" aria-hidden="true">
+                <i class="fas fa-check text-primary"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-body text-textPrimary">
+                  Completed <span class="font-medium text-primary">"Introduction to Algorithms"</span> lesson in Computer Science Fundamentals
+                </p>
+                <div class="flex items-center justify-between mt-1">
+                  <p class="text-xs text-textSecondary font-body">2 hours ago</p>
+                  <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">Learning</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Activity Item -->
+            <div class="flex items-start space-x-3 p-4 bg-background rounded-lg border border-neutral/10 hover:border-secondary/20 transition-colors" role="listitem">
+              <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center flex-shrink-0" aria-hidden="true">
+                <i class="fas fa-comment text-secondary"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-body text-textPrimary">
+                  Posted a question in <span class="font-medium text-secondary">Mathematics Study Group</span>
+                </p>
+                <div class="flex items-center justify-between mt-1">
+                  <p class="text-xs text-textSecondary font-body">5 hours ago</p>
+                  <span class="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded-full">Social</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Activity Item -->
+            <div class="flex items-start space-x-3 p-4 bg-background rounded-lg border border-neutral/10 hover:border-coral-500/20 transition-colors" role="listitem">
+              <div class="w-10 h-10 bg-coral-500/10 rounded-full flex items-center justify-center flex-shrink-0" aria-hidden="true">
+                <i class="fas fa-trophy text-coral-500"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-body text-textPrimary">
+                  Earned <span class="font-medium text-coral-500">"Quick Learner"</span> achievement
+                </p>
+                <div class="flex items-center justify-between mt-1">
+                  <p class="text-xs text-textSecondary font-body">Yesterday</p>
+                  <span class="text-xs bg-coral-500/10 text-coral-500 px-2 py-1 rounded-full">Achievement</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Activity Item -->
+            <div class="flex items-start space-x-3 p-4 bg-background rounded-lg border border-neutral/10 hover:border-primary/20 transition-colors" role="listitem">
+              <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0" aria-hidden="true">
+                <i class="fas fa-book text-primary"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-body text-textPrimary">
+                  Enrolled in <span class="font-medium text-primary">Web Development Basics</span> course
+                </p>
+                <div class="flex items-center justify-between mt-1">
+                  <p class="text-xs text-textSecondary font-body">2 days ago</p>
+                  <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">Enrollment</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Activity Item -->
+            <div class="flex items-start space-x-3 p-4 bg-background rounded-lg border border-neutral/10 hover:border-secondary/20 transition-colors" role="listitem">
+              <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center flex-shrink-0" aria-hidden="true">
+                <i class="fas fa-users text-secondary"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-body text-textPrimary">
+                  Joined <span class="font-medium text-secondary">Advanced Algorithms</span> study group
+                </p>
+                <div class="flex items-center justify-between mt-1">
+                  <p class="text-xs text-textSecondary font-body">3 days ago</p>
+                  <span class="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded-full">Group</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 text-center">
+            <button class="text-primary hover:text-indigo-600 text-sm font-body font-medium" aria-label="Load more activities">
+              Load More Activities
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Tab functionality
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabPanes = document.querySelectorAll('.tab-pane');
+
+  tabButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const tabId = this.getAttribute('data-tab');
+      
+      // Update active tab button
+      tabButtons.forEach(btn => {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-selected', 'false');
+        btn.setAttribute('tabindex', '-1');
+      });
+      this.classList.add('active');
+      this.setAttribute('aria-selected', 'true');
+      this.setAttribute('tabindex', '0');
+      
+      // Show corresponding tab pane
+      tabPanes.forEach(pane => {
+        pane.classList.add('hidden');
+        pane.setAttribute('aria-hidden', 'true');
+      });
+      const activePane = document.getElementById(`${tabId}-tab`);
+      activePane.classList.remove('hidden');
+      activePane.setAttribute('aria-hidden', 'false');
+    });
+  });
+
+  // Keyboard navigation for tabs
+  tabButtons.forEach(button => {
+    button.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.click();
+      } else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const currentIndex = Array.from(tabButtons).indexOf(this);
+        let newIndex;
+        if (e.key === 'ArrowRight') {
+          newIndex = (currentIndex + 1) % tabButtons.length;
+        } else {
+          newIndex = (currentIndex - 1 + tabButtons.length) % tabButtons.length;
+        }
+        tabButtons[newIndex].focus();
+        tabButtons[newIndex].click();
+      }
+    });
+  });
+
+  // Ensure first tab is active on page load
+  const firstTab = document.querySelector('.tab-button.active');
+  if (firstTab) {
+    const tabId = firstTab.getAttribute('data-tab');
+    const firstPane = document.getElementById(`${tabId}-tab`);
+    firstPane.classList.remove('hidden');
+    firstPane.setAttribute('aria-hidden', 'false');
+    firstTab.setAttribute('aria-selected', 'true');
+    firstTab.setAttribute('tabindex', '0');
+  }
+});
+</script>
+
+<style>
+.tab-button {
+  @apply px-6 py-4 text-sm font-body font-medium text-textSecondary border-b-2 border-transparent hover:text-primary hover:border-primary transition-colors whitespace-nowrap;
+}
+
+.tab-button.active {
+  @apply text-primary border-primary;
+}
+
+.tab-pane {
+  @apply transition-opacity duration-300;
+}
+</style>
+{% endblock %}

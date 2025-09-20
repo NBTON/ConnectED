@@ -1,58 +1,540 @@
 {% extends "layout.njk" %}
 {% block content %}
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="text-2xl font-semibold">{{ course.title }}</h1>
-      <p class="mt-1 text-sm text-gray-600">
-        <a href="{{ course.linktoTheCall }}" target="_blank" rel="noopener" class="text-primary hover:underline">Join call</a>
-      </p>
-    </div>
-    <div>
-      <a href="/courses" class="btn-secondary">Back to Courses</a>
+<div class="bg-background min-h-screen">
+  <!-- Breadcrumb Navigation -->
+  <div class="bg-white border-b border-neutral/20">
+    <div class="container mx-auto px-4 lg:px-8 py-4">
+      <nav class="text-sm text-textSecondary font-body" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2">
+          <li>
+            <a href="/" class="hover:text-indigo-500 transition-colors">Home</a>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-chevron-right text-xs mx-2"></i>
+            <a href="/courses" class="hover:text-indigo-500 transition-colors">Courses</a>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-chevron-right text-xs mx-2"></i>
+            <span class="text-textPrimary font-medium">{{ course.title }}</span>
+          </li>
+        </ol>
+      </nav>
     </div>
   </div>
 
-  <div class="mt-6 border-b border-gray-200">
-    <nav class="-mb-px flex space-x-6" aria-label="Tabs">
-      <a href="/courses/{{ course._id }}?tab=overview" class="whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium {{ tab == 'overview' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">Overview</a>
-      <a href="/courses/{{ course._id }}?tab=groups" class="whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium {{ tab == 'groups' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">Study Groups</a>
-    </nav>
-  </div>
+  <!-- Course Hero Section -->
+  <div class="bg-gradient-to-r from-indigo-500 to-teal-500 text-white">
+    <div class="container mx-auto px-4 lg:px-8 py-8">
+      <div class="max-w-4xl">
+        <!-- Category Badge -->
+        <div class="mb-4">
+          <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-semibold font-body">
+            {{ course.category or 'General Education' }}
+          </span>
+        </div>
 
-  {% if tab == 'overview' %}
-    <div class="mt-6">
-      <div class="prose prose-sm max-w-none">
-        <p>This is the course overview. Use the Study Groups tab to create or join a group.</p>
-      </div>
-    </div>
-  {% else %}
-    <div class="mt-6 flex items-center justify-between">
-      <h2 class="text-lg font-semibold">Study Groups</h2>
-      <a href="/groups/new?course={{ course._id }}" class="btn-primary">Create Study Group</a>
-    </div>
-
-    {% if groups and groups | length > 0 %}
-      <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {% for g in groups %}
-          <article class="card">
-            <div class="p-4">
-              <div class="flex items-center justify-between">
-                <h3 class="text-lg font-semibold truncate" title="{{ g.name }}">{{ g.name }}</h3>
-                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium {{ g.visibility == 'public' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700' }}">{{ g.visibility | capitalize }}</span>
+        <h1 class="text-3xl lg:text-4xl font-heading font-bold mb-4">{{ course.title }}</h1>
+        
+        <!-- Instructor Info -->
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mr-3">
+            <i class="fas fa-user text-lg"></i>
+          </div>
+          <div>
+            <p class="font-semibold font-body">Instructor: {{ course.instructor or 'Expert Educator' }}</p>
+            <div class="flex items-center text-sm opacity-90">
+              <div class="flex items-center mr-4">
+                <i class="fas fa-star text-amber-300 mr-1"></i>
+                <span>4.8</span>
+                <span class="ml-1">(128 reviews)</span>
               </div>
-              <p class="mt-1 text-sm text-gray-600">Members: {{ g.memberCount }}</p>
-              <div class="mt-4 flex items-center justify-between">
-                <a href="/groups/{{ g._id }}" class="btn-secondary">View</a>
-                {% if g.isOwner %}
-                  <span class="text-xs text-gray-500">Owner</span>
-                {% endif %}
+              <div class="flex items-center">
+                <i class="fas fa-users mr-1"></i>
+                <span>2,450 students</span>
               </div>
             </div>
-          </article>
-        {% endfor %}
+          </div>
+        </div>
+
+        <!-- Course Stats -->
+        <div class="flex flex-wrap gap-6 mb-6">
+          <div class="flex items-center">
+            <i class="fas fa-clock mr-2"></i>
+            <span>8 weeks</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fas fa-video mr-2"></i>
+            <span>24 lessons</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fas fa-certificate mr-2"></i>
+            <span>Certificate of Completion</span>
+          </div>
+        </div>
       </div>
-    {% else %}
-      <p class="mt-4 text-gray-600">No Study Groups yet. Be the first to create one!</p>
-    {% endif %}
-  {% endif %}
+    </div>
+  </div>
+
+  <div class="container mx-auto px-4 lg:px-8 py-8">
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Main Content Column (2/3 width) -->
+      <div class="lg:w-2/3">
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-xl shadow-md border border-neutral/20 mb-8">
+          <nav class="flex overflow-x-auto" aria-label="Course tabs">
+            <a href="/courses/{{ course._id }}?tab=overview" 
+               class="flex-1 min-w-0 px-6 py-4 text-center font-heading font-semibold border-b-2 {{ tab == 'overview' ? 'border-indigo-500 text-indigo-500' : 'border-transparent text-textSecondary hover:text-textPrimary' }} transition-colors">
+              Overview
+            </a>
+            <a href="/courses/{{ course._id }}?tab=curriculum" 
+               class="flex-1 min-w-0 px-6 py-4 text-center font-heading font-semibold border-b-2 {{ tab == 'curriculum' ? 'border-indigo-500 text-indigo-500' : 'border-transparent text-textSecondary hover:text-textPrimary' }} transition-colors">
+              Curriculum
+            </a>
+            <a href="/courses/{{ course._id }}?tab=instructor" 
+               class="flex-1 min-w-0 px-6 py-4 text-center font-heading font-semibold border-b-2 {{ tab == 'instructor' ? 'border-indigo-500 text-indigo-500' : 'border-transparent text-textSecondary hover:text-textPrimary' }} transition-colors">
+              Instructor
+            </a>
+            <a href="/courses/{{ course._id }}?tab=reviews" 
+               class="flex-1 min-w-0 px-6 py-4 text-center font-heading font-semibold border-b-2 {{ tab == 'reviews' ? 'border-indigo-500 text-indigo-500' : 'border-transparent text-textSecondary hover:text-textPrimary' }} transition-colors">
+              Reviews
+            </a>
+            <a href="/courses/{{ course._id }}?tab=groups" 
+               class="flex-1 min-w-0 px-6 py-4 text-center font-heading font-semibold border-b-2 {{ tab == 'groups' ? 'border-indigo-500 text-indigo-500' : 'border-transparent text-textSecondary hover:text-textPrimary' }} transition-colors">
+              Study Groups
+            </a>
+          </nav>
+        </div>
+
+        <!-- Tab Content -->
+        {% if tab == 'overview' %}
+          <!-- Overview Tab -->
+          <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6 mb-6">
+            <h2 class="text-2xl font-heading font-bold text-textPrimary mb-4">Course Description</h2>
+            <div class="prose prose-lg max-w-none text-textSecondary font-body">
+              <p>{{ course.description or 'This course provides comprehensive learning materials and interactive sessions to help you master the subject. Join study groups to collaborate with peers and enhance your learning experience.' }}</p>
+              
+              <h3 class="text-xl font-heading font-semibold text-textPrimary mt-6 mb-4">What You'll Learn</h3>
+              <ul class="space-y-2">
+                <li class="flex items-start">
+                  <i class="fas fa-check text-teal-500 mt-1 mr-3"></i>
+                  <span>Fundamental concepts and principles</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-check text-teal-500 mt-1 mr-3"></i>
+                  <span>Practical applications and real-world examples</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-check text-teal-500 mt-1 mr-3"></i>
+                  <span>Advanced techniques and problem-solving strategies</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-check text-teal-500 mt-1 mr-3"></i>
+                  <span>Collaborative learning through study groups</span>
+                </li>
+              </ul>
+
+              <h3 class="text-xl font-heading font-semibold text-textPrimary mt-6 mb-4">Who This Course Is For</h3>
+              <ul class="space-y-2">
+                <li class="flex items-start">
+                  <i class="fas fa-user-graduate text-indigo-500 mt-1 mr-3"></i>
+                  <span>Students looking to supplement their studies</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-briefcase text-indigo-500 mt-1 mr-3"></i>
+                  <span>Professionals seeking skill development</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-lightbulb text-indigo-500 mt-1 mr-3"></i>
+                  <span>Lifelong learners interested in the subject</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+        {% elif tab == 'curriculum' %}
+          <!-- Curriculum Tab -->
+          <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6 mb-6">
+            <h2 class="text-2xl font-heading font-bold text-textPrimary mb-6">Course Curriculum</h2>
+            
+            <div class="space-y-4">
+              <!-- Module 1 -->
+              <div class="border border-neutral/20 rounded-lg overflow-hidden">
+                <button class="w-full flex items-center justify-between p-4 bg-background hover:bg-neutral/50 transition-colors font-heading font-semibold text-textPrimary"
+                        onclick="toggleAccordion('module1')" aria-expanded="false" aria-controls="module1-content">
+                  <span>Module 1: Introduction to the Subject</span>
+                  <i class="fas fa-chevron-down transition-transform" id="module1-icon"></i>
+                </button>
+                <div id="module1-content" class="hidden border-t border-neutral/20">
+                  <div class="p-4 space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-neutral/20">
+                      <div class="flex items-center">
+                        <i class="fas fa-play-circle text-indigo-500 mr-3"></i>
+                        <span class="font-body">Welcome and Course Overview</span>
+                      </div>
+                      <span class="text-textSecondary text-sm">15 min</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-neutral/20">
+                      <div class="flex items-center">
+                        <i class="fas fa-file-alt text-teal-500 mr-3"></i>
+                        <span class="font-body">Course Materials Download</span>
+                      </div>
+                      <span class="text-textSecondary text-sm">PDF</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Module 2 -->
+              <div class="border border-neutral/20 rounded-lg overflow-hidden">
+                <button class="w-full flex items-center justify-between p-4 bg-background hover:bg-neutral/50 transition-colors font-heading font-semibold text-textPrimary"
+                        onclick="toggleAccordion('module2')" aria-expanded="false" aria-controls="module2-content">
+                  <span>Module 2: Core Concepts</span>
+                  <i class="fas fa-chevron-down transition-transform" id="module2-icon"></i>
+                </button>
+                <div id="module2-content" class="hidden border-t border-neutral/20">
+                  <div class="p-4 space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-neutral/20">
+                      <div class="flex items-center">
+                        <i class="fas fa-play-circle text-indigo-500 mr-3"></i>
+                        <span class="font-body">Fundamental Principles</span>
+                      </div>
+                      <span class="text-textSecondary text-sm">25 min</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-neutral/20">
+                      <div class="flex items-center">
+                        <i class="fas fa-tasks text-coral-500 mr-3"></i>
+                        <span class="font-body">Practice Exercises</span>
+                      </div>
+                      <span class="text-textSecondary text-sm">Quiz</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        {% elif tab == 'instructor' %}
+          <!-- Instructor Tab -->
+          <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6 mb-6">
+            <h2 class="text-2xl font-heading font-bold text-textPrimary mb-6">About the Instructor</h2>
+            
+            <div class="flex flex-col sm:flex-row items-start gap-6">
+              <div class="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-user text-indigo-500 text-3xl"></i>
+              </div>
+              
+              <div class="flex-1">
+                <h3 class="text-xl font-heading font-semibold text-textPrimary mb-2">{{ course.instructor or 'Expert Educator' }}</h3>
+                <p class="text-textSecondary font-body mb-4">Senior Educator with 10+ years of experience</p>
+                
+                <div class="flex items-center mb-4">
+                  <div class="flex items-center text-amber-500 mr-6">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                    <span class="text-textPrimary ml-2">4.8/5.0</span>
+                  </div>
+                  <div class="flex items-center text-textSecondary">
+                    <i class="fas fa-users mr-2"></i>
+                    <span>12,450 students</span>
+                  </div>
+                </div>
+
+                <div class="prose prose-lg max-w-none text-textSecondary font-body">
+                  <p>Our instructor is a passionate educator with extensive experience in teaching and mentoring students. They believe in collaborative learning and have helped thousands of students achieve their academic goals through engaging teaching methods and personalized support.</p>
+                  
+                  <h4 class="text-lg font-heading font-semibold text-textPrimary mt-6 mb-3">Qualifications</h4>
+                  <ul class="space-y-2">
+                    <li class="flex items-start">
+                      <i class="fas fa-graduation-cap text-teal-500 mt-1 mr-3"></i>
+                      <span>PhD in Education</span>
+                    </li>
+                    <li class="flex items-start">
+                      <i class="fas fa-award text-teal-500 mt-1 mr-3"></i>
+                      <span>Certified Teaching Professional</span>
+                    </li>
+                    <li class="flex items-start">
+                      <i class="fas fa-chalkboard-teacher text-teal-500 mt-1 mr-3"></i>
+                      <span>10+ years teaching experience</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        {% elif tab == 'reviews' %}
+          <!-- Reviews Tab -->
+          <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6 mb-6">
+            <h2 class="text-2xl font-heading font-bold text-textPrimary mb-6">Student Reviews</h2>
+            
+            <div class="flex flex-col lg:flex-row gap-8 mb-8">
+              <!-- Rating Summary -->
+              <div class="lg:w-1/3">
+                <div class="text-center">
+                  <div class="text-5xl font-heading font-bold text-textPrimary mb-2">4.8</div>
+                  <div class="flex justify-center mb-2">
+                    {% for i in range(5) %}
+                      <i class="fas fa-star text-amber-400"></i>
+                    {% endfor %}
+                  </div>
+                  <p class="text-textSecondary font-body">Based on 128 reviews</p>
+                </div>
+              </div>
+
+              <!-- Rating Distribution -->
+              <div class="lg:w-2/3">
+                <div class="space-y-2">
+                  {% for i in range(5, 0, -1) %}
+                  <div class="flex items-center">
+                    <span class="w-12 text-textSecondary font-body">{{ i }} star{% if i > 1 %}s{% endif %}</span>
+                    <div class="flex-1 bg-background rounded-full h-2 mx-2">
+                      <div class="bg-amber-400 h-2 rounded-full" style="width: {{ [80, 65, 50, 30, 15][5-i] }}%"></div>
+                    </div>
+                    <span class="w-12 text-textSecondary text-right font-body">{{ [80, 65, 50, 30, 15][5-i] }}%</span>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Review List -->
+            <div class="space-y-6">
+              <!-- Sample Review 1 -->
+              <div class="border-b border-neutral/20 pb-6 last:border-b-0">
+                <div class="flex items-start justify-between mb-3">
+                  <div>
+                    <h4 class="font-heading font-semibold text-textPrimary">Sarah Johnson</h4>
+                    <div class="flex items-center mt-1">
+                      <div class="flex items-center text-amber-400 mr-2">
+                        {% for i in range(5) %}
+                          <i class="fas fa-star"></i>
+                        {% endfor %}
+                      </div>
+                      <span class="text-textSecondary text-sm">2 weeks ago</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="text-textSecondary font-body">This course exceeded my expectations! The instructor explains complex concepts in a way that's easy to understand, and the study groups made learning collaborative and fun.</p>
+              </div>
+
+              <!-- Sample Review 2 -->
+              <div class="border-b border-neutral/20 pb-6 last:border-b-0">
+                <div class="flex items-start justify-between mb-3">
+                  <div>
+                    <h4 class="font-heading font-semibold text-textPrimary">Michael Chen</h4>
+                    <div class="flex items-center mt-1">
+                      <div class="flex items-center text-amber-400 mr-2">
+                        {% for i in range(4) %}
+                          <i class="fas fa-star"></i>
+                        {% endfor %}
+                        <i class="fas fa-star-half-alt"></i>
+                      </div>
+                      <span class="text-textSecondary text-sm">1 month ago</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="text-textSecondary font-body">Great course material and excellent community support. The live sessions were particularly helpful for clarifying doubts.</p>
+              </div>
+            </div>
+          </div>
+
+        {% else %}
+          <!-- Study Groups Tab (Default) -->
+          <div class="bg-white rounded-xl shadow-md border border-neutral/20 p-6 mb-6">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+              <h2 class="text-2xl font-heading font-bold text-textPrimary">Study Groups</h2>
+              <a href="/groups/new?course={{ course._id }}" class="inline-flex items-center px-6 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors font-semibold font-body">
+                <i class="fas fa-plus mr-2"></i>
+                Create Study Group
+              </a>
+            </div>
+
+            {% if groups and groups | length > 0 %}
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for g in groups %}
+                  <article class="bg-white rounded-lg border border-neutral/20 p-4 hover:shadow-md transition-all">
+                    <div class="flex items-center justify-between mb-3">
+                      <h3 class="font-heading font-semibold text-textPrimary truncate" title="{{ g.name }}">{{ g.name }}</h3>
+                      <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ g.visibility == 'public' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }} font-body">
+                        {{ g.visibility | capitalize }}
+                      </span>
+                    </div>
+                    <p class="text-textSecondary text-sm mb-4 font-body">Members: {{ g.memberCount }}</p>
+                    <div class="flex items-center justify-between">
+                      <a href="/groups/{{ g._id }}" class="inline-flex items-center px-3 py-2 border border-neutral/30 text-textPrimary rounded-lg hover:bg-background transition-colors font-body">
+                        View Group
+                      </a>
+                      {% if g.isOwner %}
+                        <span class="text-xs text-textSecondary font-body">Owner</span>
+                      {% endif %}
+                    </div>
+                  </article>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="text-center py-12">
+                <i class="fas fa-users text-6xl text-textSecondary mb-6"></i>
+                <h3 class="text-xl font-heading font-semibold text-textPrimary mb-3">No Study Groups Yet</h3>
+                <p class="text-textSecondary mb-6 font-body">Be the first to create a study group for this course!</p>
+                <a href="/groups/new?course={{ course._id }}" class="inline-flex items-center px-6 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors font-semibold font-body">
+                  <i class="fas fa-plus mr-2"></i>
+                  Create the First Group
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Sidebar Column (1/3 width) - Sticky -->
+      <div class="lg:w-1/3 lg:sticky lg:top-8 self-start">
+        <div class="bg-white rounded-xl shadow-lg border border-neutral/20 overflow-hidden">
+          <!-- Enrollment CTA -->
+          <div class="p-6 border-b border-neutral/20">
+            <div class="text-center mb-4">
+              <span class="text-3xl font-heading font-bold text-textPrimary">Free</span>
+              <p class="text-textSecondary font-body">Lifetime access</p>
+            </div>
+            
+            <button class="w-full bg-indigo-500 text-white py-3 rounded-lg hover:bg-indigo-600 transition-colors font-semibold font-body mb-3">
+              <i class="fas fa-book-open mr-2"></i>
+              Enroll Now
+            </button>
+            
+            <button class="w-full border border-neutral/30 text-textPrimary py-3 rounded-lg hover:bg-background transition-colors font-semibold font-body mb-4">
+              <i class="fas fa-heart mr-2"></i>
+              Add to Wishlist
+            </button>
+
+            <div class="text-center">
+              <p class="text-textSecondary text-sm font-body">
+                <i class="fas fa-shield-alt mr-1"></i>
+                30-day satisfaction guarantee
+              </p>
+            </div>
+          </div>
+
+          <!-- Course Features -->
+          <div class="p-6 border-b border-neutral/20">
+            <h3 class="font-heading font-semibold text-textPrimary mb-4">This course includes:</h3>
+            <ul class="space-y-2">
+              <li class="flex items-center text-textSecondary font-body">
+                <i class="fas fa-play-circle text-indigo-500 mr-3"></i>
+                <span>24 hours of video content</span>
+              </li>
+              <li class="flex items-center text-textSecondary font-body">
+                <i class="fas fa-file-alt text-teal-500 mr-3"></i>
+                <span>Downloadable resources</span>
+              </li>
+              <li class="flex items-center text-textSecondary font-body">
+                <i class="fas fa-infinity text-coral-500 mr-3"></i>
+                <span>Full lifetime access</span>
+              </li>
+              <li class="flex items-center text-textSecondary font-body">
+                <i class="fas fa-mobile-alt text-indigo-500 mr-3"></i>
+                <span>Access on mobile and TV</span>
+              </li>
+              <li class="flex items-center text-textSecondary font-body">
+                <i class="fas fa-certificate text-teal-500 mr-3"></i>
+                <span>Certificate of completion</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Share and Social -->
+          <div class="p-6">
+            <h3 class="font-heading font-semibold text-textPrimary mb-4">Share this course</h3>
+            <div class="flex space-x-2">
+              <button class="flex-1 bg-blue-600 text-white py-2 px-3 rounded text-sm hover:bg-blue-700 transition-colors font-body">
+                <i class="fab fa-facebook mr-1"></i>
+                Share
+              </button>
+              <button class="flex-1 bg-blue-400 text-white py-2 px-3 rounded text-sm hover:bg-blue-500 transition-colors font-body">
+                <i class="fab fa-twitter mr-1"></i>
+                Tweet
+              </button>
+              <button class="flex-1 bg-blue-800 text-white py-2 px-3 rounded text-sm hover:bg-blue-900 transition-colors font-body">
+                <i class="fab fa-linkedin mr-1"></i>
+                Share
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- You Might Also Like -->
+        <div class="bg-white rounded-xl shadow-md border border-neutral/20 mt-6 p-6">
+          <h3 class="font-heading font-semibold text-textPrimary mb-4">You might also like</h3>
+          <div class="space-y-4">
+            <!-- Recommended Course 1 -->
+            <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-background transition-colors">
+              <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-book text-indigo-500"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-heading font-semibold text-textPrimary text-sm truncate">Advanced Mathematics</h4>
+                <p class="text-textSecondary text-xs font-body">12,340 students</p>
+              </div>
+            </div>
+
+            <!-- Recommended Course 2 -->
+            <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-background transition-colors">
+              <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-flask text-teal-500"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-heading font-semibold text-textPrimary text-sm truncate">Science Fundamentals</h4>
+                <p class="text-textSecondary text-xs font-body">8,760 students</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Accordion functionality for curriculum
+  function toggleAccordion(moduleId) {
+    const content = document.getElementById(`${moduleId}-content`);
+    const icon = document.getElementById(`${moduleId}-icon`);
+    const button = document.querySelector(`[aria-controls="${moduleId}-content"]`);
+    
+    const isExpanded = content.classList.contains('hidden');
+    content.classList.toggle('hidden', !isExpanded);
+    icon.classList.toggle('rotate-180', isExpanded);
+    
+    // Update ARIA attributes
+    button.setAttribute('aria-expanded', isExpanded);
+  }
+
+  // Initialize accordions
+  document.addEventListener('DOMContentLoaded', function() {
+    // Close all accordions by default
+    document.querySelectorAll('[id$="-content"]').forEach(content => {
+      content.classList.add('hidden');
+    });
+    
+    document.querySelectorAll('[aria-controls]').forEach(button => {
+      button.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // Smooth scrolling for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+</script>
 {% endblock %}
