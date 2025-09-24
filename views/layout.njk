@@ -61,7 +61,15 @@
 
     <main id="main" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       {% if flash %}
-        <div id="flash" class="mb-6 relative rounded-md p-4 {{ flash.type == 'success' ? 'bg-green-50 text-green-800' : flash.type == 'error' ? 'bg-red-50 text-red-800' : flash.type == 'warning' ? 'bg-yellow-50 text-yellow-800' : 'bg-blue-50 text-blue-800' }}">
+        {% set flashClass = 'bg-blue-50 text-blue-800' %}
+        {% if flash.type == 'success' %}
+          {% set flashClass = 'bg-green-50 text-green-800' %}
+        {% elif flash.type == 'error' %}
+          {% set flashClass = 'bg-red-50 text-red-800' %}
+        {% elif flash.type == 'warning' %}
+          {% set flashClass = 'bg-yellow-50 text-yellow-800' %}
+        {% endif %}
+        <div id="flash" class="mb-6 relative rounded-md p-4 {{ flashClass }}">
           <button type="button" aria-label="Dismiss" class="absolute top-3 right-3 rounded-md p-1 hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50" onclick="document.getElementById('flash').remove()">✕</button>
           {{ flash.message }}
         </div>
@@ -72,7 +80,7 @@
 
     <footer class="border-t bg-white">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 text-sm text-gray-600 flex items-center justify-between">
-        <p>&copy; {{ (new Date()).getFullYear() }} connectED</p>
+        <p>&copy; {{ currentYear }} connectED</p>
         <p class="text-gray-400">Built for students</p>
       </div>
     </footer>

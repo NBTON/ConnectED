@@ -4,7 +4,7 @@
     <div>
       <div class="flex items-center gap-3">
         <h1 class="text-2xl font-semibold">{{ group.name }}</h1>
-        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium {{ group.visibility == 'public' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700' }}">{{ group.visibility | capitalize }}</span>
+        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium {% if group.visibility == 'public' %}bg-green-50 text-green-700{% else %}bg-gray-100 text-gray-700{% endif %}">{{ group.visibility | capitalize }}</span>
       </div>
       <p class="mt-1 text-sm text-gray-600">Course: <a href="/courses/{{ course._id }}?tab=groups" class="text-primary hover:underline">{{ course.title }}</a></p>
     </div>

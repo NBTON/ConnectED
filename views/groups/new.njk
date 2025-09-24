@@ -24,8 +24,8 @@
       <div>
         <label for="visibility" class="label">Visibility</label>
         <select id="visibility" name="visibility" class="input">
-          <option value="public" {{ values.visibility == 'public' ? 'selected' : '' }}>Public</option>
-          <option value="private" {{ values.visibility == 'private' ? 'selected' : '' }}>Private</option>
+          <option value="public" {% if values.visibility == 'public' %}selected{% endif %}>Public</option>
+          <option value="private" {% if values.visibility == 'private' %}selected{% endif %}>Private</option>
         </select>
       </div>
       <div>
