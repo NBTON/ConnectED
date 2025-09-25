@@ -1,15 +1,5 @@
-const mongoose = require("mongoose")
-require("dotenv").config()
+// Use SQLite instead of MongoDB for local development
+const { User, Course, Group, GroupMember } = require('./db-sqlite')
 
-const DATABASE_URL = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/conect-ed"
-;(async () => {
-  try {
-    const connectionInstance = await mongoose.connect(DATABASE_URL)
-    console.log("db connected on", DATABASE_URL, connectionInstance.connection.host)
-  } catch (error) {
-    console.warn("MongoDB connection failed:", error?.message)
-    // Do not crash in dev/preview; routes that need DB will still error gracefully
-  }
-})()
-
-module.exports = mongoose
+// Export the models directly
+module.exports = { User, Course, Group, GroupMember }

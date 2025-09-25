@@ -17,8 +17,7 @@ const addCoursePostAction = async (req, res) => {
   try {
     const payload = { ...req.body }
     if (req.file?.filename) payload.image = req.file.filename
-    const newCourse = new Course(payload)
-    await newCourse.save()
+    const newCourse = Course.create(payload)
     req.session.flash = { type: "success", message: "Course created." }
     res.redirect("/courses")
   } catch (error) {
@@ -35,24 +34,19 @@ const renderCourseListing = async (req, res) => {
   const text = req.query.search
   let searchQuery = {}
   if (text && text.trim().length > 0) {
-    const regex = new RegExp(text.trim(), "i")
-    searchQuery = {
-      $or: [
-        { title: { $regex: regex } },
-        { linktoTheCall: { $regex: regex } },
-      ],
-    }
+    searchQuery = { search: text.trim() }
   }
 
-  const totalCount = await Course.countDocuments(searchQuery)
+  const totalCount = Course.count(searchQuery)
   const totalPages = Math.max(1, Math.ceil(totalCount / RECORDS_PER_PAGE))
   if (currentPage > totalPages) currentPage = totalPages
 
   const skipOffset = (currentPage - 1) * RECORDS_PER_PAGE
-  const courses = await Course.find(searchQuery)
-    .skip(skipOffset)
-    .limit(RECORDS_PER_PAGE)
-    .lean()
+  const courses = Course.find({
+    ...searchQuery,
+    skip: skipOffset,
+    limit: RECORDS_PER_PAGE
+  })
 
   res.render("course-list.njk", { courses, totalPages, currentPage, text })
 }

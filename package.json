@@ -11,17 +11,19 @@
   "dependencies": {
     "alert": "^6.0.1",
     "bcrypt": "^5.1.1",
+    "better-sqlite3": "^12.4.1",
+    "compression": "^1.7.4",
     "connect-mongo": "^5.1.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-session": "^1.17.3",
+    "helmet": "^7.1.0",
     "mongoose": "^8.3.4",
     "multer": "^1.4.5-lts.1",
-    "nunjucks": "^3.2.4",
     "nodemon": "^3.1.0",
-    "compression": "^1.7.4",
-    "dotenv": "^16.4.5",
-    "helmet": "^7.1.0"
+    "nunjucks": "^3.2.4",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",

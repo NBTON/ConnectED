@@ -1,6 +1,5 @@
 const express = require("express")
 const session = require("express-session")
-const MongoStore = require("connect-mongo")
 const cors = require("cors")
 const nunjucks = require("nunjucks")
 const compression = require("compression")
@@ -31,23 +30,14 @@ app.use(express.static("public", {
   immutable: true,
 }))
 
-const mongoose = require("./db")
+// Database models are now imported directly in controllers
 
 const sessionSecret = process.env.SESSION_SECRET || 'dev_secret_change_me'
-const mongoUrl = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/conect-ed'
-
-let sessionStore
-try {
-  sessionStore = MongoStore.create({ mongoUrl })
-} catch (err) {
-  console.warn("Mongo session store init failed, falling back to MemoryStore. Error:", err?.message)
-}
 
 app.use(session({
   secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
-  store: sessionStore,
   cookie: { httpOnly: true, sameSite: 'lax', secure: false },
 }))
 

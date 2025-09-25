@@ -21,8 +21,7 @@ const registerUser = async (req, res) => {
     }
 
     const hashPassword = await bcrypt.hash(password.trim(), 10)
-    const newUser = new User({ email: email.trim(), username: username.trim(), password: hashPassword })
-    await newUser.save()
+    const newUser = User.create({ email: email.trim(), username: username.trim(), password: hashPassword })
 
     req.session.userId = newUser._id
     req.session.username = newUser.username
@@ -32,11 +31,14 @@ const registerUser = async (req, res) => {
   } catch (error) {
     let msg = 'Something went wrong.'
     let errors = {}
-    if (error?.code === 11000) {
-      const dupField = Object.keys(error.keyValue || {})[0]
-      if (dupField) {
-        msg = `${dupField.charAt(0).toUpperCase() + dupField.slice(1)} already exists.`
-        errors[dupField] = 'Already exists.'
+    if (error?.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+      // Check which field is duplicated
+      if (error.message.includes('email')) {
+        msg = 'Email already exists.'
+        errors.email = 'Already exists.'
+      } else if (error.message.includes('username')) {
+        msg = 'Username already exists.'
+        errors.username = 'Already exists.'
       }
     }
     req.session.flash = { type: 'error', message: msg, errors }
@@ -55,9 +57,9 @@ const loginUser = async (req, res) => {
       return res.redirect('/login')
     }
 
-    const user = await User.findOne({ username }).lean()
+    const user = User.findByUsername(username)
 
-    if (!user?._id) {
+    if (!user?.id) {
       req.session.flash = { type: 'error', message: 'Invalid credentials.', errors: { username: 'Check your username.' } }
       return res.redirect('/login')
     }
@@ -68,7 +70,7 @@ const loginUser = async (req, res) => {
       return res.redirect('/login')
     }
 
-    req.session.userId = user._id
+    req.session.userId = user.id
     req.session.username = user.username
     req.session.userEmail = user.email
     req.session.flash = { type: 'success', message: 'Signed in successfully.' }
