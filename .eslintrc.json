@@ -1,16 +1,52 @@
 {
   "env": {
     "node": true,
-    "es2022": true
+    "es2022": true,
+    "jest": true
   },
-  "extends": ["eslint:recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:node/recommended",
+    "plugin:security/recommended",
+    "prettier"
+  ],
   "parserOptions": {
     "ecmaVersion": 2022,
     "sourceType": "commonjs"
   },
+  "plugins": [
+    "node",
+    "security"
+  ],
   "rules": {
-    "no-unused-vars": ["warn", { "args": "none" }],
+    "no-unused-vars": ["error", { "args": "none" }],
     "no-undef": "error",
-    "eqeqeq": "error"
-  }
+    "eqeqeq": ["error", "always"],
+    "no-console": "warn",
+    "no-process-exit": "error",
+    "no-sync": "warn",
+    "node/no-missing-require": "error",
+    "node/no-unpublished-require": "error",
+    "node/no-unsupported-features/es-syntax": "off",
+    "security/detect-buffer-noassert": "error",
+    "security/detect-child-process": "warn",
+    "security/detect-disable-mustache-escape": "error",
+    "security/detect-eval-with-expression": "error",
+    "security/detect-no-csrf-before-method-override": "error",
+    "security/detect-non-literal-regexp": "warn",
+    "security/detect-non-literal-require": "error",
+    "security/detect-object-injection": "warn",
+    "security/detect-possible-timing-attacks": "warn",
+    "security/detect-unsafe-regex": "error"
+  },
+  "overrides": [
+    {
+      "files": ["tests/**/*.js"],
+      "rules": {
+        "no-console": "off",
+        "security/detect-child-process": "off",
+        "node/no-unpublished-require": "off"
+      }
+    }
+  ]
 }

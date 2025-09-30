@@ -1,0 +1,78 @@
+# Branch Protection Configuration for ConnectED
+# This file defines the branch protection rules for the repository
+
+main:
+  # Require status checks to pass before merging
+  required_status_checks:
+    strict: true
+    contexts:
+      - "test (18.x)"
+      - "test (20.x)"
+      - "Security Scanning"
+      - "CodeQL Analysis"
+      - "Dependency Review"
+      - "License Check"
+
+  # Require branches to be up to date before merging
+  required_pull_request_reviews:
+    required_approving_review_count: 2
+    dismiss_stale_reviews: true
+    require_code_owner_reviews: true
+    dismissal_restrictions:
+      users: ["admin"]
+      teams: ["core-team"]
+
+  # Restrict who can push to main
+  restrictions:
+    users: ["admin"]
+    teams: ["core-team"]
+    apps: ["dependabot", "security-bot"]
+
+  # Require conversation resolution before merging
+  required_conversation_resolution: true
+
+  # Require up-to-date branches
+  require_branches_to_be_up_to_date: true
+
+develop:
+  # Require status checks to pass before merging
+  required_status_checks:
+    strict: false
+    contexts:
+      - "test (18.x)"
+      - "test (20.x)"
+      - "Security Scanning"
+
+  # Require pull request reviews
+  required_pull_request_reviews:
+    required_approving_review_count: 1
+    dismiss_stale_reviews: true
+
+  # Allow direct pushes from maintainers
+  restrictions: null
+
+feature-branches:
+  # Pattern for feature branches (e.g., feature/*, hotfix/*)
+  pattern: "feature/*"
+  required_status_checks:
+    strict: false
+    contexts:
+      - "test (20.x)"
+
+  required_pull_request_reviews:
+    required_approving_review_count: 1
+
+release-branches:
+  # Pattern for release branches (e.g., release/*)
+  pattern: "release/*"
+  required_status_checks:
+    strict: true
+    contexts:
+      - "test (18.x)"
+      - "test (20.x)"
+      - "Security Scanning"
+      - "Performance Tests"
+
+  required_pull_request_reviews:
+    required_approving_review_count: 2
+    require_code_owner_reviews: true

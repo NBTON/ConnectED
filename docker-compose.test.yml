@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # Test application
+  app:
+    build: .
+    container_name: connected-app-test
+    environment:
+      - NODE_ENV=test
+      - MONGODB_URL=mongodb://mongodb:27017/connected_test
+      - REDIS_URL=redis://redis:6379
+      - SESSION_SECRET=test-secret-key
+      - PORT=3000
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./public:/app/public:ro
+      - ./views:/app/views:ro
+      - ./coverage:/app/coverage
+    networks:
+      - connected-test-network
+    command: npm run test
+
+  # MongoDB for testing
+  mongodb:
+    image: mongo:7.0
+    container_name: connected-mongodb-test
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=connected_test
+    volumes:
+      - mongodb_test_data:/data/db
+      - ./docker/mongodb/test-init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - connected-test-network
+
+  # Redis for testing
+  redis:
+    image: redis:7.2-alpine
+    container_name: connected-redis-test
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_test_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - connected-test-network
+
+volumes:
+  mongodb_test_data:
+    driver: local
+  redis_test_data:
+    driver: local
+
+networks:
+  connected-test-network:
+    driver: bridge

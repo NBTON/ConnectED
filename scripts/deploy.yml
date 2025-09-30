@@ -1,0 +1,51 @@
+# ConnectED Deployment Configuration
+# This file contains deployment settings for different environments
+
+development:
+  docker_compose_file: "docker-compose.yml"
+  health_check_url: "http://localhost:3000"
+  backup_enabled: false
+  notifications_enabled: false
+  auto_rollback: false
+
+staging:
+  docker_compose_file: "docker-compose.staging.yml"
+  health_check_url: "https://staging.connected.edu"
+  backup_enabled: true
+  notifications_enabled: true
+  auto_rollback: true
+  webhook_url: "https://hooks.slack.com/your-staging-webhook"
+
+production:
+  docker_compose_file: "docker-compose.production.yml"
+  health_check_url: "https://connected.edu"
+  backup_enabled: true
+  notifications_enabled: true
+  auto_rollback: true
+  webhook_url: "https://hooks.slack.com/your-production-webhook"
+  load_balancer_url: "https://your-load-balancer.com"
+  backup_remote: "s3://your-backup-bucket/connected/production"
+
+# Database migration settings
+migrations:
+  enabled: true
+  timeout: 300
+  retries: 3
+
+# Health check settings
+health_check:
+  timeout: 30
+  retries: 3
+  interval: 10
+
+# Security settings
+security:
+  scan_enabled: true
+  fail_on_high_severity: true
+  allowed_cve_list: []
+
+# Performance monitoring
+monitoring:
+  enabled: true
+  metrics_endpoint: "/metrics"
+  log_level: "info"

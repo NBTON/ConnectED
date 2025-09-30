@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # Main application
+  app:
+    build: .
+    container_name: connected-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URL=mongodb://mongodb:27017/connected
+      - REDIS_URL=redis://redis:6379
+      - SESSION_SECRET=${SESSION_SECRET:-your-secret-key}
+      - PORT=3000
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./public:/app/public:ro
+      - ./views:/app/views:ro
+    networks:
+      - connected-network
+
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: connected-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=connected
+    volumes:
+      - mongodb_data:/data/db
+      - ./docker/mongodb/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - connected-network
+
+  # Redis Cache
+  redis:
+    image: redis:7.2-alpine
+    container_name: connected-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - connected-network
+
+  # Redis Commander (for development)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: connected-redis-commander
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    depends_on:
+      - redis
+    networks:
+      - connected-network
+
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  connected-network:
+    driver: bridge

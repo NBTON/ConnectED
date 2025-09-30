@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const { Course, Group, GroupMember, User } = require("../models/db_schema")
+const cacheService = require("../services/cache")
 
 async function getMemberCounts(groupIds) {
   if (!groupIds.length) return {}
@@ -20,7 +21,19 @@ function ensureOwner(req, group) {
 const renderCourseDetail = async (req, res) => {
   try {
     const courseId = req.params.courseId
-    const course = await Course.findById(courseId).lean()
+    const cacheKey = cacheService.generateCourseKey(courseId)
+
+    // Try to get course from cache first
+    const course = await cacheService.cachedOperation(
+      cacheKey,
+      async () => {
+        const courseData = await Course.findById(courseId).lean()
+        if (!courseData) return null
+        return courseData
+      },
+      1800 // Cache for 30 minutes
+    )
+
     if (!course) {
       req.session.flash = { type: "error", message: "Course not found." }
       return res.redirect("/courses")
@@ -29,18 +42,57 @@ const renderCourseDetail = async (req, res) => {
     const tab = req.query.tab === "groups" ? "groups" : "overview"
 
     let groups = []
-    let memberCounts = {}
     if (tab === "groups") {
       const userId = req.session.userId
-      let myGroupIds = []
-      if (userId) {
-        const myMemberships = await GroupMember.find({ userId }).select("groupId").lean()
-        myGroupIds = myMemberships.map(m => m.groupId)
-      }
-      const query = { courseId: course._id, $or: [{ visibility: "public" }, { _id: { $in: myGroupIds } }] }
-      groups = await Group.find(query).sort({ createdAt: -1 }).lean()
-      memberCounts = await getMemberCounts(groups.map(g => g._id))
-      groups = groups.map(g => ({ ...g, memberCount: memberCounts[String(g._id)] || 0, isOwner: userId ? String(g.ownerId) === String(userId) : false }))
+      const groupsCacheKey = cacheService.generateCourseGroupsKey(courseId)
+
+      groups = await cacheService.cachedOperation(
+        groupsCacheKey,
+        async () => {
+          let myGroupIds = []
+          if (userId) {
+            const myMemberships = await GroupMember.find({ userId }).select("groupId").lean()
+            myGroupIds = myMemberships.map(m => m.groupId)
+          }
+
+          // Optimized aggregation pipeline for groups with member counts
+          const groupsAggregation = await Group.aggregate([
+            {
+              $match: {
+                courseId: course._id,
+                $or: [
+                  { visibility: "public" },
+                  { _id: { $in: myGroupIds.map(id => new mongoose.Types.ObjectId(id)) } }
+                ]
+              }
+            },
+            {
+              $lookup: {
+                from: "groupmembers",
+                localField: "_id",
+                foreignField: "groupId",
+                as: "members"
+              }
+            },
+            {
+              $addFields: {
+                memberCount: { $size: "$members" },
+                isOwner: userId ? { $eq: ["$ownerId", new mongoose.Types.ObjectId(userId)] } : false,
+                isMember: userId ? { $in: [new mongoose.Types.ObjectId(userId), "$members.userId"] } : false
+              }
+            },
+            {
+              $project: {
+                members: 0 // Remove members array from result
+              }
+            },
+            { $sort: { createdAt: -1 } }
+          ])
+
+          return groupsAggregation
+        },
+        300 // Cache groups for 5 minutes
+      )
     }
 
     res.render("courses/detail.njk", { course, tab, groups })
@@ -93,6 +145,10 @@ const createGroup = async (req, res) => {
     await group.save()
     await GroupMember.create({ groupId: group._id, userId: ownerId, role: "owner" })
 
+    // Invalidate relevant caches
+    await cacheService.invalidatePattern(`course:${courseId}:*`)
+    await cacheService.del(cacheService.generateUserGroupsKey(ownerId))
+
     req.session.flash = { type: "success", message: "Study Group created." }
     res.redirect(`/groups/${group._id}`)
   } catch (err) {
@@ -134,6 +190,10 @@ const resolveInvite = async (req, res) => {
     if (!existing) {
       await GroupMember.create({ groupId: group._id, userId, role: "member" })
     }
+
+    // Invalidate relevant caches
+    await cacheService.invalidatePattern(`course:${group.courseId}:*`)
+    await cacheService.del(cacheService.generateUserGroupsKey(userId))
 
     req.session.flash = { type: "success", message: "You have joined the Study Group." }
     res.redirect(`/groups/${group._id}`)
@@ -303,17 +363,57 @@ const regenerateInvite = async (req, res) => {
 const listMyGroups = async (req, res) => {
   try {
     const userId = req.session.userId
-    const memberships = await GroupMember.find({ userId }).lean()
-    const groupIds = memberships.map(m => m.groupId)
-    const groups = await Group.find({ _id: { $in: groupIds } }).lean()
-    const courseIds = Array.from(new Set(groups.map(g => String(g.courseId))))
-    const courses = await Course.find({ _id: { $in: courseIds } }).lean()
-    const courseMap = {}
-    for (const c of courses) courseMap[String(c._id)] = c
+    const cacheKey = cacheService.generateUserGroupsKey(userId)
 
-    const memberCounts = await getMemberCounts(groups.map(g => g._id))
+    // Try to get user's groups from cache first
+    const items = await cacheService.cachedOperation(
+      cacheKey,
+      async () => {
+        // Optimized single aggregation pipeline to replace N+1 queries
+        const result = await GroupMember.aggregate([
+          { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+          {
+            $lookup: {
+              from: "groups",
+              localField: "groupId",
+              foreignField: "_id",
+              as: "group"
+            }
+          },
+          { $unwind: "$group" },
+          {
+            $lookup: {
+              from: Course.collection.name, // Use actual collection name
+              localField: "group.courseId",
+              foreignField: "_id",
+              as: "course"
+            }
+          },
+          { $unwind: "$course" },
+          {
+            $group: {
+              _id: "$groupId",
+              group: { $first: "$group" },
+              course: { $first: "$course" },
+              role: { $first: "$role" },
+              memberCount: { $sum: 1 }
+            }
+          },
+          {
+            $project: {
+              group: 1,
+              course: 1,
+              memberCount: 1,
+              role: 1
+            }
+          },
+          { $sort: { "group.createdAt": -1 } }
+        ])
 
-    const items = groups.map(g => ({ group: g, course: courseMap[String(g.courseId)], memberCount: memberCounts[String(g._id)] || 0, role: memberships.find(m => String(m.groupId) === String(g._id))?.role || "member" }))
+        return result
+      },
+      300 // Cache for 5 minutes
+    )
 
     res.render("me/groups.njk", { items })
   } catch (err) {

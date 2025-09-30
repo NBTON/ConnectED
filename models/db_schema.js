@@ -15,6 +15,8 @@ const courseSchema = new mongoose.Schema({
 
 courseSchema.index({ title: 1 })
 courseSchema.index({ linktoTheCall: 1 })
+courseSchema.index({ title: "text", linktoTheCall: "text" }) // For text search
+courseSchema.index({ createdAt: -1 }) // For sorting by creation date
 
 const groupSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true, minlength: 2, maxlength: 60 },
@@ -28,6 +30,12 @@ const groupSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 groupSchema.index({ courseId: 1, name: 1 })
+groupSchema.index({ courseId: 1 }) // For finding groups by course
+groupSchema.index({ ownerId: 1 }) // For finding groups by owner
+groupSchema.index({ visibility: 1 }) // For filtering public/private groups
+groupSchema.index({ courseId: 1, visibility: 1 }) // For course group listings
+groupSchema.index({ createdAt: -1 }) // For sorting by creation date
+groupSchema.index({ inviteToken: 1 }) // For invite link resolution
 
 groupSchema.pre("validate", function(next) {
   if (!this.inviteToken) {
@@ -56,6 +64,9 @@ const groupMemberSchema = new mongoose.Schema({
 })
 
 groupMemberSchema.index({ groupId: 1, userId: 1 }, { unique: true })
+groupMemberSchema.index({ userId: 1 }) // For finding user's groups
+groupMemberSchema.index({ groupId: 1 }) // For finding group members
+groupMemberSchema.index({ userId: 1, groupId: 1 }) // For checking membership
 
 const User = mongoose.model("User", userSchema)
 // Map to legacy collection name 'subjects' to avoid data loss
