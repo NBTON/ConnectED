@@ -1,15 +1,18 @@
 const mongoose = require("mongoose")
-require("dotenv").config()
+const config = require("./config")
 
-const DATABASE_URL = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/conect-ed"
-;(async () => {
+mongoose.set("strictQuery", true)
+
+async function connectDB() {
   try {
-    const connectionInstance = await mongoose.connect(DATABASE_URL)
-    console.log("db connected on", DATABASE_URL, connectionInstance.connection.host)
+    const conn = await mongoose.connect(config.MONGODB_URI)
+    console.log("db connected on", config.MONGODB_URI, conn.connection.host)
+    return conn
   } catch (error) {
     console.warn("MongoDB connection failed:", error?.message)
-    // Do not crash in dev/preview; routes that need DB will still error gracefully
+    // In dev, do not crash; dependent routes will handle errors gracefully
+    return null
   }
-})()
+}
 
-module.exports = mongoose
+module.exports = { mongoose, connectDB }

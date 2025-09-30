@@ -11,11 +11,30 @@ const storage = multer.diskStorage({
   },
 })
 
-const multerStorage = multer({ storage })
+function imageFileFilter(req, file, cb) {
+  const allowed = ["image/jpeg", "image/png", "image/gif", "image/webp"]
+  if (allowed.includes(file.mimetype)) return cb(null, true)
+  cb(new Error("Invalid file type. Only images are allowed."))
+}
+
+const multerStorage = multer({
+  storage,
+  fileFilter: imageFileFilter,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+})
 
 const addCoursePostAction = async (req, res) => {
   try {
-    const payload = { ...req.body }
+    const title = (req.body.title || "").trim()
+    const linktoTheCall = (req.body.linktoTheCall || "").trim()
+    const errors = {}
+    if (!title) errors.title = "Title is required."
+    if (!linktoTheCall) errors.linktoTheCall = "Call link is required."
+    if (Object.keys(errors).length) {
+      req.session.flash = { type: "error", message: "Please fix the errors below.", errors }
+      return res.redirect("/courses/add")
+    }
+    const payload = { title, linktoTheCall }
     if (req.file?.filename) payload.image = req.file.filename
     const newCourse = new Course(payload)
     await newCourse.save()

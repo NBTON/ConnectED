@@ -5,18 +5,32 @@ const cors = require("cors")
 const nunjucks = require("nunjucks")
 const compression = require("compression")
 const helmet = require("helmet")
+const rateLimit = require("express-rate-limit")
 const fs = require("fs")
-require("dotenv").config()
+const config = require("./config")
 
 const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(cors())
+app.use(cors({ origin: config.CORS_ORIGIN, credentials: false }))
 app.use(compression())
-app.use(helmet({
-  contentSecurityPolicy: false,
-}))
+app.use(helmet(config.isProd ? {
+  contentSecurityPolicy: {
+    useDefaults: true,
+    directives: {
+      defaultSrc: ["'self'"],
+      imgSrc: ["'self'", "data:"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+    },
+  },
+} : { contentSecurityPolicy: false }))
+
+if (config.isProd) {
+  // Ensure secure cookies behind reverse proxies
+  app.set("trust proxy", 1)
+}
 
 nunjucks.configure('views', { autoescape: true, express: app })
 
@@ -27,14 +41,14 @@ try {
 
 // Static assets with caching
 app.use(express.static("public", {
-  maxAge: process.env.STATIC_MAX_AGE || "7d",
+  maxAge: config.STATIC_MAX_AGE,
   immutable: true,
 }))
 
-const mongoose = require("./db")
+const { connectDB } = require("./db")
 
-const sessionSecret = process.env.SESSION_SECRET || 'dev_secret_change_me'
-const mongoUrl = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/conect-ed'
+const sessionSecret = config.SESSION_SECRET
+const mongoUrl = config.MONGODB_URI
 
 let sessionStore
 try {
@@ -48,8 +62,28 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: sessionStore,
-  cookie: { httpOnly: true, sameSite: 'lax', secure: false },
+  cookie: {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: config.isProd,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  },
 }))
+
+// Global rate limit (basic hardening)
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+})
+app.use(globalLimiter)
+
+// Stricter rate limit for login
+const loginLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  max: 10,
+  message: "Too many login attempts, please try again later.",
+})
+app.use('/login', loginLimiter)
 
 const { flashMiddleware } = require('./middleware/flash')
 app.use(flashMiddleware)
@@ -81,7 +115,14 @@ app.use((err, req, res, next) => {
   res.render('500.njk', { title: 'Server Error' })
 })
 
-const PORT = process.env.PORT || 3000
-app.listen(PORT, () => console.log(`server running on port ${PORT}`))
+const PORT = config.PORT
+
+// For UI preview - start server even if DB connection fails
+connectDB()
+  .then(() => console.log("Database connected successfully"))
+  .catch(err => console.warn("Database connection failed, continuing for UI preview:", err.message))
+  .finally(() => {
+    app.listen(PORT, () => console.log(`server running on port ${PORT}`))
+  })
 
 module.exports = app

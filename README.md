@@ -9,8 +9,10 @@ Express + Nunjucks + MongoDB app modernized with Tailwind CSS, cookie sessions, 
 ## Environment variables
 Create a `.env` or export these in your shell:
 - MONGODB_URI: Mongo connection string (e.g. mongodb://127.0.0.1:27017/conect-ed)
-- SESSION_SECRET: Any random string for session signing
+- SESSION_SECRET: Any random string for session signing (use a long, random value in prod)
 - PORT: Optional (defaults to 3000)
+- CORS_ORIGIN: Allowed origin for CORS (defaults to `*`)
+- STATIC_MAX_AGE: Static assets cache max-age (e.g. `7d`)
 
 ## Install
 ```
@@ -34,7 +36,7 @@ npm run build:css
 
 ## What changed in Phase 1
 - UI moved to Tailwind CSS with brand primary color #E45200
-- Sessions via express-session + connect-mongo (cookie: httpOnly, sameSite=lax, secure=false in dev)
+- Sessions via express-session + connect-mongo (cookie: httpOnly, sameSite=lax; secure only in production)
 - Flash messaging for inline success/errors
 - Route protection: /courses, /courses/add and POSTs require login
 - Logout route (POST /logout)
@@ -56,6 +58,20 @@ npm run build:css
 
 ## Uploads
 Images are uploaded to `public/uploads/courses`. A default fallback (`public/Assets/subject-img.jpg`) is used if a course image is missing.
+
+Uploads are restricted to images (`jpeg`, `png`, `gif`, `webp`) and max 2MB.
+
+---
+
+## Security & Hardening
+
+- Helmet is enabled with a conservative CSP in production; CSP is disabled in development for ease of iteration.
+- Basic global rate limiting and stricter `/login` rate limit protect against brute force.
+- Session cookies are `httpOnly`, `sameSite=lax`, and `secure` in production.
+- MongoDB connection is centralized and resilient; the server starts even if DB is unreachable, and routes handle errors gracefully.
+- CORS is configurable via `CORS_ORIGIN`; by default it’s permissive. Tighten this in production.
+
+See `.env.example` for environment setup guidance.
 
 ---
 
