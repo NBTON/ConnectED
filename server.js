@@ -116,13 +116,8 @@ app.use((err, req, res, next) => {
 })
 
 const PORT = config.PORT
-
-// For UI preview - start server even if DB connection fails
-connectDB()
-  .then(() => console.log("Database connected successfully"))
-  .catch(err => console.warn("Database connection failed, continuing for UI preview:", err.message))
-  .finally(() => {
-    app.listen(PORT, () => console.log(`server running on port ${PORT}`))
-  })
+connectDB().finally(() => {
+  app.listen(PORT, () => console.log(`server running on port ${PORT}`))
+})
 
 module.exports = app
